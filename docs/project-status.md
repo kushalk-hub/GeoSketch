@@ -143,8 +143,8 @@ Physical movement → GPS satellites → NEO-6M → ESP32-C3 → Wi-Fi → FastA
 
 ### 3.3 🟡 → ✅ P1 — Local configuration files absent
 - **Resolved:** created `firmware/geosketch_esp32c3/config.h`, `backend/.env`, `frontend/.env`
-  from their `.example` files. Generated a device key
-  (`pP3h7GQEYnHEgYhcILwutf6wlAVumPcG` for `geosketch-01`) and used it consistently across
+  from their `.example` files. Generated a device key (kept only in the git-ignored
+  `backend/.env` and `config.h` for `geosketch-01`) and used it consistently across
   firmware + backend. Device-key digests refresh on startup (`device_service.py`), so no DB reset
   is needed. Wi-Fi SSID/password in `config.h` remain for the user to fill.
 
