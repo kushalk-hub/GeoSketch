@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 
-def format_distance(metres: Optional[float]) -> str:
+def format_distance(metres: float | None) -> str:
     if metres is None:
         return "distance unknown"
     if metres < 1000:
@@ -14,10 +13,10 @@ def format_distance(metres: Optional[float]) -> str:
     return f"{metres / 1000.0:.2f} km"
 
 
-def format_duration(seconds: Optional[float]) -> str:
+def format_duration(seconds: float | None) -> str:
     if not seconds or seconds <= 0:
         return "duration unknown"
-    total = int(round(seconds))
+    total = round(seconds)
     hours, remainder = divmod(total, 3600)
     minutes, secs = divmod(remainder, 60)
     if hours:
@@ -27,13 +26,13 @@ def format_duration(seconds: Optional[float]) -> str:
     return f"{secs}s"
 
 
-def format_speed(kmh: Optional[float]) -> str:
+def format_speed(kmh: float | None) -> str:
     if kmh is None:
         return "n/a"
     return f"{kmh:.1f} km/h"
 
 
-def format_date(value: Optional[datetime], fmt: str = "%d %b %Y") -> str:
+def format_date(value: datetime | None, fmt: str = "%d %b %Y") -> str:
     if value is None:
         return "date unknown"
     return value.strftime(fmt)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Generator
+from collections.abc import Generator
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -19,7 +17,7 @@ router = APIRouter(tags=["Meta"])
 
 
 @router.get("/health", summary="Health check")
-def health(db: Session = Depends(get_db), settings: Settings = Depends(get_settings)) -> Dict:
+def health(db: Session = Depends(get_db), settings: Settings = Depends(get_settings)) -> dict:
     """Cheap readiness probe used by the frontend and by docker-compose."""
     devices = db.scalar(select(func.count(Device.id))) or 0
     journeys = db.scalar(select(func.count(Journey.id))) or 0
@@ -40,5 +38,5 @@ def health(db: Session = Depends(get_db), settings: Settings = Depends(get_setti
     summary="Available artwork styles",
     description="Catalogue consumed by the artwork studio to build the style picker.",
 )
-def artwork_styles() -> List[Dict]:
+def artwork_styles() -> list[dict]:
     return all_styles()

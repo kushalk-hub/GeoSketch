@@ -8,7 +8,7 @@ serialised as::
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class AppError(Exception):
@@ -21,9 +21,9 @@ class AppError(Exception):
         self,
         message: str,
         *,
-        code: Optional[str] = None,
-        status_code: Optional[int] = None,
-        details: Optional[Dict[str, Any]] = None,
+        code: str | None = None,
+        status_code: int | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(message)
         self.message = message
@@ -33,8 +33,8 @@ class AppError(Exception):
             self.status_code = status_code
         self.details = details or {}
 
-    def to_payload(self) -> Dict[str, Any]:
-        payload: Dict[str, Any] = {"code": self.code, "message": self.message}
+    def to_payload(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {"code": self.code, "message": self.message}
         if self.details:
             payload["details"] = self.details
         return {"error": payload}

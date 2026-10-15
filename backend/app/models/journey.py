@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import enum
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -13,7 +12,7 @@ from app.database.base import Base
 from app.utils.time import utcnow
 
 
-class JourneyStatus(str, enum.Enum):
+class JourneyStatus(enum.StrEnum):
     """Recording state machine.
 
     recording -> paused -> recording      (pause / resume)
@@ -28,7 +27,7 @@ class JourneyStatus(str, enum.Enum):
     SAVED = "saved"
 
 
-class JourneySource(str, enum.Enum):
+class JourneySource(enum.StrEnum):
     """Where the points came from.
 
     Hardware and demo data are never mixed inside a journey, so the UI can
@@ -45,20 +44,20 @@ class Journey(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(160), default="Untitled journey", nullable=False)
     owner: Mapped[str] = mapped_column(String(64), default="local", index=True, nullable=False)
-    device_id: Mapped[Optional[str]] = mapped_column(
+    device_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("devices.device_id", ondelete="SET NULL"), nullable=True, index=True
     )
     source: Mapped[str] = mapped_column(String(16), default=JourneySource.HARDWARE.value)
     status: Mapped[str] = mapped_column(
         String(16), default=JourneyStatus.RECORDING.value, index=True, nullable=False
     )
-    notes: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
     started_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
-    paused_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    saved_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    paused_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    saved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     # Cached statistics (recomputed whenever points change / the journey ends).
     total_distance_m: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
@@ -66,21 +65,21 @@ class Journey(Base):
     moving_seconds: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     point_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
-    start_latitude: Mapped[Optional[float]] = mapped_column(nullable=True)
-    start_longitude: Mapped[Optional[float]] = mapped_column(nullable=True)
-    end_latitude: Mapped[Optional[float]] = mapped_column(nullable=True)
-    end_longitude: Mapped[Optional[float]] = mapped_column(nullable=True)
+    start_latitude: Mapped[float | None] = mapped_column(nullable=True)
+    start_longitude: Mapped[float | None] = mapped_column(nullable=True)
+    end_latitude: Mapped[float | None] = mapped_column(nullable=True)
+    end_longitude: Mapped[float | None] = mapped_column(nullable=True)
 
-    points: Mapped[List["GPSPoint"]] = relationship(  # noqa: F821
+    points: Mapped[list[GPSPoint]] = relationship(  # noqa: F821
         back_populates="journey",
         cascade="all, delete-orphan",
         order_by="GPSPoint.sequence",
         lazy="selectin",
     )
-    artworks: Mapped[List["Artwork"]] = relationship(  # noqa: F821
+    artworks: Mapped[list[Artwork]] = relationship(  # noqa: F821
         back_populates="journey", cascade="all, delete-orphan", lazy="selectin"
     )
-    device: Mapped[Optional["Device"]] = relationship(back_populates="journeys")  # noqa: F821
+    device: Mapped[Device | None] = relationship(back_populates="journeys")  # noqa: F821
 
     __table_args__ = (
         Index("ix_journeys_owner_status", "owner", "status"),

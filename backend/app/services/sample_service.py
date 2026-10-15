@@ -6,11 +6,11 @@ hardware data: an imported sample produces a journey with ``source = "demo"``.
 
 from __future__ import annotations
 
+import itertools
 import json
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -31,14 +31,14 @@ from app.utils.time import utcnow
 logger = logging.getLogger(__name__)
 
 
-def _routes_dir(settings: Optional[Settings] = None) -> Path:
+def _routes_dir(settings: Settings | None = None) -> Path:
     settings = settings or get_settings()
     return settings.sample_routes_dir
 
 
-def _route_paths(settings: Optional[Settings] = None) -> Dict[str, Path]:
+def _route_paths(settings: Settings | None = None) -> dict[str, Path]:
     directory = _routes_dir(settings)
-    found: Dict[str, Path] = {}
+    found: dict[str, Path] = {}
     if not directory.exists():
         logger.warning("Sample route directory %s does not exist", directory)
         return found
@@ -84,15 +84,15 @@ def _load(path: Path) -> SampleRouteDetail:
 
 def route_distance_m(points) -> float:
     total = 0.0
-    for previous, point in zip(points, points[1:]):
+    for previous, point in itertools.pairwise(points):
         total += haversine_m(
             previous.latitude, previous.longitude, point.latitude, point.longitude
         )
     return total
 
 
-def list_sample_routes(settings: Optional[Settings] = None) -> List[SampleRouteSummary]:
-    summaries: List[SampleRouteSummary] = []
+def list_sample_routes(settings: Settings | None = None) -> list[SampleRouteSummary]:
+    summaries: list[SampleRouteSummary] = []
     for route_id, path in _route_paths(settings).items():
         try:
             detail = _load(path)
@@ -113,7 +113,7 @@ def list_sample_routes(settings: Optional[Settings] = None) -> List[SampleRouteS
     return summaries
 
 
-def load_sample_route(route_id: str, settings: Optional[Settings] = None) -> SampleRouteDetail:
+def load_sample_route(route_id: str, settings: Settings | None = None) -> SampleRouteDetail:
     paths = _route_paths(settings)
     path = paths.get(route_id)
     if path is None:
@@ -130,8 +130,8 @@ def import_sample_route(
     *,
     owner: str,
     route_id: str,
-    payload: Optional[DemoImportRequest] = None,
-    settings: Optional[Settings] = None,
+    payload: DemoImportRequest | None = None,
+    settings: Settings | None = None,
 ) -> Journey:
     """Create a finished DEMO journey from a bundled sample route.
 

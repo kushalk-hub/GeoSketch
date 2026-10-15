@@ -7,8 +7,6 @@ present simulated data as a live ESP32-C3 recording.
 
 from __future__ import annotations
 
-from typing import List
-
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
@@ -22,8 +20,8 @@ from app.services import journey_service, sample_service
 router = APIRouter(prefix="/demo", tags=["Demo mode"], responses=COMMON_ERROR_RESPONSES)
 
 
-@router.get("/routes", response_model=List[SampleRouteSummary], summary="List sample routes")
-def list_routes(settings: Settings = Depends(get_settings)) -> List[SampleRouteSummary]:
+@router.get("/routes", response_model=list[SampleRouteSummary], summary="List sample routes")
+def list_routes(settings: Settings = Depends(get_settings)) -> list[SampleRouteSummary]:
     return sample_service.list_sample_routes(settings)
 
 

@@ -11,9 +11,9 @@ from __future__ import annotations
 import json
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
-from pydantic import Field, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # backend/app/core/config.py -> backend/  and  GeoSketch/
@@ -98,7 +98,7 @@ class Settings(BaseSettings):
 
     # ------------------------------------------------------------------
     @property
-    def cors_origin_list(self) -> List[str]:
+    def cors_origin_list(self) -> list[str]:
         """Browser origins allowed to call the API.
 
         Accepts ``"a,b"`` as well as a JSON-ish ``'["a","b"]'`` value, so both
@@ -113,9 +113,9 @@ class Settings(BaseSettings):
         return [str(origin).strip() for origin in parsed if str(origin).strip()]
 
     @property
-    def device_key_map(self) -> Dict[str, str]:
+    def device_key_map(self) -> dict[str, str]:
         """Parse ``device_keys`` into ``{device_id: api_key}``."""
-        mapping: Dict[str, str] = {}
+        mapping: dict[str, str] = {}
         for chunk in self.device_keys.split(","):
             chunk = chunk.strip()
             if not chunk:

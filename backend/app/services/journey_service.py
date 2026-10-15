@@ -16,9 +16,9 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import List, Optional, Sequence, Tuple
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -30,7 +30,13 @@ from app.models.device import Device
 from app.models.gps_point import GPSPoint, PointSource
 from app.models.journey import Journey, JourneySource, JourneyStatus
 from app.schemas.gps import GPSPointIn
-from app.schemas.journey import JourneyCreate, JourneyDetail, JourneyOut, JourneyStatistics, JourneyUpdate
+from app.schemas.journey import (
+    JourneyCreate,
+    JourneyDetail,
+    JourneyOut,
+    JourneyStatistics,
+    JourneyUpdate,
+)
 from app.services.geo import point_time, validate_coordinates
 from app.utils.segmentation import pair_metrics, segment_route
 from app.utils.time import elapsed_seconds, utcnow
@@ -57,9 +63,9 @@ class IngestOutcome:
     accepted: bool
     stored: bool
     duplicate: bool
-    point: Optional[GPSPoint] = None
-    reason: Optional[str] = None
-    message: Optional[str] = None
+    point: GPSPoint | None = None
+    reason: str | None = None
+    message: str | None = None
 
 
 @dataclass
@@ -74,7 +80,7 @@ class BulkIngestSummary:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-def default_journey_title(source: str, moment: Optional[datetime] = None) -> str:
+def default_journey_title(source: str, moment: datetime | None = None) -> str:
     moment = moment or utcnow()
     prefix = "Demo journey" if source == JourneySource.DEMO.value else "Journey"
     return f"{prefix} - {moment.strftime('%d %b %Y %H:%M')}"
@@ -92,7 +98,7 @@ def compute_dedupe_key(journey_id: int, payload: GPSPointIn) -> str:
     else:
         stamp = payload.timestamp.isoformat() if payload.timestamp else "no-time"
         basis = f"pos:{payload.latitude:.6f}|{payload.longitude:.6f}|{stamp}"
-    return hashlib.sha256(f"{journey_id}:{basis}".encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{journey_id}:{basis}".encode()).hexdigest()
 
 
 def _next_sequence(db: Session, journey_id: int) -> int:
@@ -106,7 +112,7 @@ def _next_sequence(db: Session, journey_id: int) -> int:
 
 def last_point(
     db: Session, journey_id: int, *, plausible_only: bool = False
-) -> Optional[GPSPoint]:
+) -> GPSPoint | None:
     statement = select(GPSPoint).where(GPSPoint.journey_id == journey_id)
     if plausible_only:
         statement = statement.where(GPSPoint.is_plausible.is_(True))
@@ -132,7 +138,7 @@ def consecutive_rejections(db: Session, journey_id: int, ceiling: int) -> int:
     return count
 
 
-def ordered_points(db: Session, journey_id: int) -> List[GPSPoint]:
+def ordered_points(db: Session, journey_id: int) -> list[GPSPoint]:
     """Every point of a journey in recorded order."""
     return list(
         db.scalars(
@@ -199,7 +205,7 @@ def create_journey(db: Session, *, owner: str, payload: JourneyCreate) -> Journe
 
 
 def get_journey(
-    db: Session, journey_id: int, *, owner: Optional[str] = None
+    db: Session, journey_id: int, *, owner: str | None = None
 ) -> Journey:
     journey = db.get(Journey, journey_id)
     if journey is None or (owner is not None and journey.owner != owner):
@@ -210,13 +216,13 @@ def get_journey(
 def list_journeys(
     db: Session,
     *,
-    owner: Optional[str] = None,
-    status: Optional[str] = None,
-    source: Optional[str] = None,
+    owner: str | None = None,
+    status: str | None = None,
+    source: str | None = None,
     saved_only: bool = False,
     limit: int = 50,
     offset: int = 0,
-) -> Tuple[List[Journey], int]:
+) -> tuple[list[Journey], int]:
     filters = []
     if owner:
         filters.append(Journey.owner == owner)
@@ -241,8 +247,8 @@ def list_journeys(
 
 
 def active_journey(
-    db: Session, *, owner: Optional[str] = None, device_id: Optional[str] = None
-) -> Optional[Journey]:
+    db: Session, *, owner: str | None = None, device_id: str | None = None
+) -> Journey | None:
     filters = [Journey.status.in_(ACTIVE_STATUSES)]
     if owner:
         filters.append(Journey.owner == owner)
@@ -360,10 +366,10 @@ def ingest_point(
     *,
     journey: Journey,
     payload: GPSPointIn,
-    device: Optional[Device] = None,
+    device: Device | None = None,
     source: str = PointSource.HARDWARE.value,
     commit: bool = True,
-    settings: Optional[Settings] = None,
+    settings: Settings | None = None,
 ) -> IngestOutcome:
     """Validate, de-duplicate and store a single fix.
 
@@ -425,7 +431,7 @@ def ingest_point(
     # forever.
     previous = last_point(db, journey.id)
     is_plausible = True
-    rejected_reason: Optional[str] = None
+    rejected_reason: str | None = None
 
     if previous is not None:
         rejections = consecutive_rejections(db, journey.id, settings.reanchor_after_rejects)
@@ -453,7 +459,7 @@ def ingest_point(
     # the live counter uses exactly the same rule as the offline recalculation.
     cut = False
     distance = 0.0
-    delta: Optional[float] = None
+    delta: float | None = None
     if is_plausible:
         anchor = last_point(db, journey.id, plausible_only=True)
         if anchor is not None:
@@ -464,7 +470,7 @@ def ingest_point(
                 max_plausible_speed_kmh=settings.max_plausible_speed_kmh,
             )
 
-    stored_point: Optional[GPSPoint] = None
+    stored_point: GPSPoint | None = None
     for attempt in range(2):
         sequence = _next_sequence(db, journey.id)
         point = GPSPoint(
@@ -510,7 +516,7 @@ def ingest_point(
                 raise ConflictError(
                     "could not assign a unique sequence number for this point",
                     code="sequence_conflict",
-                )
+                ) from None
 
     if stored_point is None:  # pragma: no cover - defensive
         raise ConflictError("failed to store GPS point", code="store_failed")
@@ -540,9 +546,9 @@ def ingest_points(
     *,
     journey: Journey,
     payloads: Sequence[GPSPointIn],
-    device: Optional[Device] = None,
+    device: Device | None = None,
     source: str = PointSource.DEMO.value,
-    settings: Optional[Settings] = None,
+    settings: Settings | None = None,
 ) -> BulkIngestSummary:
     """Bulk ingest used by demo replay (hardware posts one point at a time)."""
     summary = BulkIngestSummary(received=len(payloads), journey_id=journey.id)
@@ -567,7 +573,7 @@ def ingest_points(
 
 
 def _apply_point_to_cache(
-    journey: Journey, point: GPSPoint, *, cut: bool, distance: float, delta: Optional[float]
+    journey: Journey, point: GPSPoint, *, cut: bool, distance: float, delta: float | None
 ) -> None:
     """Incremental journey totals.
 
@@ -592,7 +598,7 @@ def _apply_point_to_cache(
 
 def journey_span(
     journey: Journey, plausible: Sequence[GPSPoint]
-) -> Tuple[Optional[datetime], Optional[datetime]]:
+) -> tuple[datetime | None, datetime | None]:
     """Earliest and latest instant that belong to the journey.
 
     Neither the server clock nor the GPS clock is trusted blindly: the journey
@@ -643,7 +649,7 @@ def refresh_journey_cache(db: Session, journey: Journey) -> Journey:
 # Statistics
 # ---------------------------------------------------------------------------
 def compute_statistics(
-    db: Session, journey: Journey, settings: Optional[Settings] = None
+    db: Session, journey: Journey, settings: Settings | None = None
 ) -> JourneyStatistics:
     settings = settings or get_settings()
     points = ordered_points(db, journey.id)
@@ -692,7 +698,7 @@ def compute_statistics(
 # ---------------------------------------------------------------------------
 # Serialisation helpers
 # ---------------------------------------------------------------------------
-def to_journey_out(journey: Journey, artwork_count: Optional[int] = None) -> JourneyOut:
+def to_journey_out(journey: Journey, artwork_count: int | None = None) -> JourneyOut:
     model = JourneyOut.model_validate(journey)
     model.artwork_count = (
         artwork_count if artwork_count is not None else len(journey.artworks or [])

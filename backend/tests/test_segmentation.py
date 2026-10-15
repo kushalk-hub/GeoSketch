@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 
 from app.artwork.geometry import process_route
 from app.utils.segmentation import segment_route
 
-BASE = datetime(2026, 10, 15, 10, 30, 0, tzinfo=timezone.utc)
+BASE = datetime(2026, 10, 15, 10, 30, 0, tzinfo=UTC)
 
 
 def point(latitude, longitude, offset_seconds, plausible=True):

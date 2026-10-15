@@ -7,7 +7,6 @@ changes the geometry - only the presentation.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
 
 from app.artwork.colors import (
     DEFAULT_ACCENT,
@@ -29,7 +28,7 @@ from app.artwork.styles import (
 from app.utils.formatting import format_date, format_distance, format_duration
 
 #: Named colour ramps selectable from the studio.
-PALETTES: Dict[str, List[str]] = {
+PALETTES: dict[str, list[str]] = {
     "aurora": ["#22d3ee", "#818cf8", "#f472b6"],
     "sunset": ["#fbbf24", "#fb7185", "#7c3aed"],
     "ocean": ["#0ea5e9", "#22d3ee", "#a7f3d0"],
@@ -47,17 +46,17 @@ class ArtworkOptions:
     """User supplied customisation, already validated by the API schema."""
 
     title: str = "Route artwork"
-    subtitle: Optional[str] = None
-    background: Optional[str] = None
-    route_color: Optional[str] = None
-    accent_color: Optional[str] = None
-    line_width: Optional[float] = None
-    glow: Optional[bool] = None
+    subtitle: str | None = None
+    background: str | None = None
+    route_color: str | None = None
+    accent_color: str | None = None
+    line_width: float | None = None
+    glow: bool | None = None
     show_start_marker: bool = True
     show_end_marker: bool = True
-    palette: Optional[str] = None
+    palette: str | None = None
 
-    def palette_stops(self) -> List[str]:
+    def palette_stops(self) -> list[str]:
         if self.palette and self.palette.lower() in PALETTES:
             return PALETTES[self.palette.lower()]
         stops = default_gradient_stops()
@@ -370,7 +369,7 @@ _BUILDERS = {
 
 
 def build_art_spec(
-    route: ProcessedRoute, style: str, options: Optional[ArtworkOptions] = None
+    route: ProcessedRoute, style: str, options: ArtworkOptions | None = None
 ) -> ArtSpec:
     """Build the renderer independent spec for ``style``."""
     options = options or ArtworkOptions()

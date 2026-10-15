@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -26,7 +25,7 @@ from app.utils.time import utcnow
 logger = logging.getLogger(__name__)
 
 
-def sync_devices_from_settings(db: Session, settings: Optional[Settings] = None) -> int:
+def sync_devices_from_settings(db: Session, settings: Settings | None = None) -> int:
     """Create/refresh device rows from ``GEOSKETCH_DEVICE_KEYS``.
 
     Runs on startup so a fresh database always knows the configured trackers.
@@ -54,11 +53,11 @@ def sync_devices_from_settings(db: Session, settings: Optional[Settings] = None)
     return created
 
 
-def get_device(db: Session, device_id: str) -> Optional[Device]:
+def get_device(db: Session, device_id: str) -> Device | None:
     return db.scalar(select(Device).where(Device.device_id == device_id))
 
 
-def require_device(db: Session, device_id: Optional[str], api_key: Optional[str]) -> Device:
+def require_device(db: Session, device_id: str | None, api_key: str | None) -> Device:
     """Authenticate a physical device from its id + API key."""
     if not device_id:
         raise AuthError("X-Device-Id header is required", code="missing_device_id")
@@ -78,9 +77,9 @@ def register_device(
     *,
     device_id: str,
     name: str,
-    firmware_version: Optional[str] = None,
-    owner: Optional[str] = None,
-    api_key: Optional[str] = None,
+    firmware_version: str | None = None,
+    owner: str | None = None,
+    api_key: str | None = None,
 ) -> Device:
     """Create or update a device row (used by the admin/setup endpoint)."""
     settings = get_settings()
@@ -108,7 +107,7 @@ def register_device(
     return device
 
 
-def is_live(device: Device, settings: Optional[Settings] = None, now: Optional[datetime] = None) -> bool:
+def is_live(device: Device, settings: Settings | None = None, now: datetime | None = None) -> bool:
     settings = settings or get_settings()
     if device.last_seen_at is None:
         return False
@@ -120,12 +119,12 @@ def mark_seen(
     db: Session,
     device: Device,
     *,
-    latitude: Optional[float] = None,
-    longitude: Optional[float] = None,
-    satellites: Optional[int] = None,
-    fix_at: Optional[datetime] = None,
-    when: Optional[datetime] = None,
-    firmware_version: Optional[str] = None,
+    latitude: float | None = None,
+    longitude: float | None = None,
+    satellites: int | None = None,
+    fix_at: datetime | None = None,
+    when: datetime | None = None,
+    firmware_version: str | None = None,
 ) -> Device:
     """Record that the device just delivered a valid fix."""
     when = when or utcnow()
@@ -143,7 +142,7 @@ def mark_seen(
     return device
 
 
-def refresh_connection_status(db: Session, devices: List[Device]) -> None:
+def refresh_connection_status(db: Session, devices: list[Device]) -> None:
     """Persist the derived online/offline state (keeps DB reports accurate)."""
     settings = get_settings()
     now = utcnow()
@@ -165,7 +164,7 @@ def refresh_connection_status(db: Session, devices: List[Device]) -> None:
         db.commit()
 
 
-def to_device_out(device: Device, settings: Optional[Settings] = None) -> DeviceOut:
+def to_device_out(device: Device, settings: Settings | None = None) -> DeviceOut:
     settings = settings or get_settings()
     now = utcnow()
     live = is_live(device, settings, now)
@@ -188,7 +187,7 @@ def to_device_out(device: Device, settings: Optional[Settings] = None) -> Device
     )
 
 
-def list_devices(db: Session, owner: Optional[str] = None) -> List[DeviceOut]:
+def list_devices(db: Session, owner: str | None = None) -> list[DeviceOut]:
     settings = get_settings()
     statement = select(Device).order_by(Device.device_id)
     if owner:
@@ -199,7 +198,7 @@ def list_devices(db: Session, owner: Optional[str] = None) -> List[DeviceOut]:
 
 
 def device_status(
-    db: Session, *, device_id: str, owner: Optional[str] = None
+    db: Session, *, device_id: str, owner: str | None = None
 ) -> DeviceStatusOut:
     settings = get_settings()
     device = get_device(db, device_id)

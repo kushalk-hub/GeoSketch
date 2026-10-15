@@ -19,9 +19,11 @@ Points already flagged ``is_plausible = False`` by the ingest service and the
 
 from __future__ import annotations
 
+import itertools
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Generic, List, Optional, Sequence, TypeVar
+from typing import Generic, TypeVar
 
 from app.services.geo import (
     distance_between,
@@ -37,17 +39,17 @@ T = TypeVar("T")
 
 @dataclass
 class SegmentationResult(Generic[T]):
-    segments: List[List[T]] = field(default_factory=list)
+    segments: list[list[T]] = field(default_factory=list)
     distance_m: float = 0.0
     moving_seconds: float = 0.0
-    max_speed_kmh: Optional[float] = None
+    max_speed_kmh: float | None = None
     gap_cuts: int = 0
     jump_cuts: int = 0
     implausible_skipped: int = 0
     invalid_skipped: int = 0
     source_points: int = 0
-    started_at: Optional[datetime] = None
-    finished_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    finished_at: datetime | None = None
 
     @property
     def used_points(self) -> int:
@@ -58,14 +60,14 @@ class SegmentationResult(Generic[T]):
         return self.implausible_skipped + self.invalid_skipped
 
     @property
-    def average_speed_kmh(self) -> Optional[float]:
+    def average_speed_kmh(self) -> float | None:
         """Average speed over moving time only (never over wall-clock pauses)."""
         if self.moving_seconds < 5.0 or self.distance_m <= 0:
             return None
         return (self.distance_m / self.moving_seconds) * 3.6
 
 
-def _seconds_between(first, second) -> Optional[float]:
+def _seconds_between(first, second) -> float | None:
     start = point_time(first)
     end = point_time(second)
     if start is None or end is None:
@@ -108,7 +110,7 @@ def segment_route(
     """Split ``points`` (already in chronological order) into drawable segments."""
     result: SegmentationResult = SegmentationResult(source_points=len(points))
 
-    cleaned: List = []
+    cleaned: list = []
     for point in points:
         if getattr(point, "is_plausible", True) is False:
             result.implausible_skipped += 1
@@ -124,8 +126,8 @@ def segment_route(
     result.started_at = point_time(cleaned[0])
     result.finished_at = point_time(cleaned[-1])
 
-    current: List = [cleaned[0]]
-    for previous, point in zip(cleaned, cleaned[1:]):
+    current: list = [cleaned[0]]
+    for previous, point in itertools.pairwise(cleaned):
         cut, distance, delta = pair_metrics(
             previous,
             point,
@@ -148,9 +150,10 @@ def segment_route(
         if delta is not None:
             result.moving_seconds += delta
         segment_speed = speed_kmh(distance, delta or 0.0)
-        if segment_speed is not None:
-            if result.max_speed_kmh is None or segment_speed > result.max_speed_kmh:
-                result.max_speed_kmh = segment_speed
+        if segment_speed is not None and (
+            result.max_speed_kmh is None or segment_speed > result.max_speed_kmh
+        ):
+            result.max_speed_kmh = segment_speed
 
     result.segments.append(current)
     return result
@@ -159,7 +162,7 @@ def segment_route(
 def straight_line_distance(points: Sequence) -> float:
     """Haversine distance that ignores segment breaks (used for diagnostics)."""
     total = 0.0
-    for previous, point in zip(points, points[1:]):
+    for previous, point in itertools.pairwise(points):
         total += haversine_m(
             previous.latitude, previous.longitude, point.latitude, point.longitude
         )

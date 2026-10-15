@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Any, Dict, Optional
+from typing import Annotated, Any
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, PlainSerializer
 
 from app.utils.time import parse_timestamp, utc_iso
 
 
-def _serialize_datetime(value: Optional[datetime]) -> Optional[str]:
+def _serialize_datetime(value: datetime | None) -> str | None:
     return utc_iso(value)
 
 
@@ -43,7 +43,7 @@ class ORMModel(BaseModel):
 class ErrorBody(BaseModel):
     code: str
     message: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 class ErrorResponse(BaseModel):
@@ -54,4 +54,4 @@ class ErrorResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
-    detail: Optional[str] = None
+    detail: str | None = None

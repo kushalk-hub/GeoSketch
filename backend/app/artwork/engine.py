@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Optional, Sequence
 
 from app.artwork.generator import ArtworkOptions, build_art_spec, default_padding
 from app.artwork.geometry import ProcessedRoute, process_route
@@ -27,15 +27,15 @@ class RenderResult:
     options: ArtworkOptions
 
 
-def resolve_canvas(style: str, width: Optional[int], height: Optional[int]):
+def resolve_canvas(style: str, width: int | None, height: int | None):
     """Canvas size for a style, honouring a single-axis override."""
     default_w, default_h = STYLE_CANVAS.get(style, (1600, 1000))
     if width and height:
         return int(width), int(height)
     if width:
-        return int(width), max(200, int(round(width * default_h / default_w)))
+        return int(width), max(200, round(width * default_h / default_w))
     if height:
-        return max(200, int(round(height * default_w / default_h))), int(height)
+        return max(200, round(height * default_w / default_h)), int(height)
     return default_w, default_h
 
 
@@ -43,10 +43,10 @@ def render_route_art(
     points: Sequence,
     *,
     style: str | ArtworkStyle = ArtworkStyle.MINIMAL,
-    options: Optional[ArtworkOptions] = None,
-    width: Optional[int] = None,
-    height: Optional[int] = None,
-    settings: Optional[Settings] = None,
+    options: ArtworkOptions | None = None,
+    width: int | None = None,
+    height: int | None = None,
+    settings: Settings | None = None,
     supersample: int = 2,
     png_export: bool = True,
 ) -> RenderResult:

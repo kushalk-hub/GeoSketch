@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -16,24 +16,24 @@ _HEX_PATTERN = r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
 class CustomArtOptions(BaseModel):
     """User customisation for the ``custom`` style (also nudges other styles)."""
 
-    background: Optional[str] = Field(default=None, pattern=_HEX_PATTERN)
-    route_color: Optional[str] = Field(default=None, pattern=_HEX_PATTERN)
-    accent_color: Optional[str] = Field(default=None, pattern=_HEX_PATTERN)
-    line_width: Optional[float] = Field(default=None, ge=0.5, le=40.0)
-    glow: Optional[bool] = None
-    title: Optional[str] = Field(default=None, max_length=120)
-    subtitle: Optional[str] = Field(default=None, max_length=160)
+    background: str | None = Field(default=None, pattern=_HEX_PATTERN)
+    route_color: str | None = Field(default=None, pattern=_HEX_PATTERN)
+    accent_color: str | None = Field(default=None, pattern=_HEX_PATTERN)
+    line_width: float | None = Field(default=None, ge=0.5, le=40.0)
+    glow: bool | None = None
+    title: str | None = Field(default=None, max_length=120)
+    subtitle: str | None = Field(default=None, max_length=160)
     show_start_marker: bool = True
     show_end_marker: bool = True
 
 
 class ArtworkRequest(BaseModel):
     style: ArtworkStyle = ArtworkStyle.MINIMAL
-    title: Optional[str] = Field(default=None, max_length=120)
+    title: str | None = Field(default=None, max_length=120)
     export_format: str = Field(default="png", pattern="^(png|svg)$")
-    palette: Optional[str] = Field(default=None, max_length=40)
-    width: Optional[int] = Field(default=None, ge=400, le=4000)
-    height: Optional[int] = Field(default=None, ge=400, le=4000)
+    palette: str | None = Field(default=None, max_length=40)
+    width: int | None = Field(default=None, ge=400, le=4000)
+    height: int | None = Field(default=None, ge=400, le=4000)
     customization: CustomArtOptions = Field(default_factory=CustomArtOptions)
     #: Persist the render as an Artwork row + files.  False = preview only.
     save: bool = True
@@ -56,9 +56,9 @@ class ArtworkOut(ORMModel):
     segment_count: int
     distance_m: float
     created_at: UTCDateTime
-    customization: Dict[str, Any] = {}
-    png_url: Optional[str] = None
-    svg_url: Optional[str] = None
+    customization: dict[str, Any] = Field(default_factory=dict)
+    png_url: str | None = None
+    svg_url: str | None = None
 
     @field_validator("customization", mode="before")
     @classmethod
@@ -85,4 +85,4 @@ class ArtworkPreview(BaseModel):
     segment_count: int
     distance_m: float
     duration_seconds: float
-    processing: Dict[str, Any] = {}
+    processing: dict[str, Any] = {}

@@ -8,27 +8,26 @@ serialising.  That keeps ordering comparisons correct and avoids the classic
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def utcnow() -> datetime:
     """Current UTC time as a naive datetime (DB representation)."""
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
-def to_utc(value: Optional[datetime]) -> Optional[datetime]:
+def to_utc(value: datetime | None) -> datetime | None:
     """Normalise any datetime to naive UTC."""
     if value is None:
         return None
     if value.tzinfo is not None:
-        return value.astimezone(timezone.utc).replace(tzinfo=None)
+        return value.astimezone(UTC).replace(tzinfo=None)
     return value
 
 
-def parse_timestamp(value: Optional[str | datetime]) -> Optional[datetime]:
+def parse_timestamp(value: str | datetime | None) -> datetime | None:
     """Parse an ISO-8601 timestamp (``Z`` or offset aware) into naive UTC."""
     if value is None:
         return None
@@ -46,14 +45,14 @@ def parse_timestamp(value: Optional[str | datetime]) -> Optional[datetime]:
     return to_utc(parsed)
 
 
-def utc_iso(value: Optional[datetime]) -> Optional[str]:
+def utc_iso(value: datetime | None) -> str | None:
     """Serialise a (naive UTC) datetime as an ISO-8601 string with ``Z``."""
     if value is None:
         return None
     return to_utc(value).strftime(ISO_FORMAT)
 
 
-def elapsed_seconds(start: Optional[datetime], end: Optional[datetime]) -> float:
+def elapsed_seconds(start: datetime | None, end: datetime | None) -> float:
     """Seconds between two naive-UTC datetimes, never negative."""
     if start is None or end is None:
         return 0.0

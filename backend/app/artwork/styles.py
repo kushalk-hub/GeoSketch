@@ -7,13 +7,13 @@ that the preview and the downloaded file always show the same drawing.
 from __future__ import annotations
 
 import enum
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
 
-Point = Tuple[float, float]
+Point = tuple[float, float]
 
 
-class ArtworkStyle(str, enum.Enum):
+class ArtworkStyle(enum.StrEnum):
     MINIMAL = "minimal"
     NEON = "neon"
     GRADIENT = "gradient"
@@ -25,7 +25,7 @@ class ArtworkStyle(str, enum.Enum):
 class StrokeLayer:
     """One polyline drawing instruction (a style may use several layers)."""
 
-    segments: List[List[Point]]
+    segments: list[list[Point]]
     color: str
     width: float = 4.0
     opacity: float = 1.0
@@ -61,17 +61,17 @@ class ArtSpec:
     width: int
     height: int
     background: str = "#ffffff"
-    background_gradient: Optional[Tuple[str, str]] = None
-    layers: List[StrokeLayer] = field(default_factory=list)
-    markers: List[MarkerLayer] = field(default_factory=list)
-    texts: List[TextLayer] = field(default_factory=list)
-    frame: Optional[Dict[str, object]] = None
-    watermark: Optional[str] = None
+    background_gradient: tuple[str, str] | None = None
+    layers: list[StrokeLayer] = field(default_factory=list)
+    markers: list[MarkerLayer] = field(default_factory=list)
+    texts: list[TextLayer] = field(default_factory=list)
+    frame: dict[str, object] | None = None
+    watermark: str | None = None
     accent: str = "#38bdf8"
 
 
 #: Presentation metadata surfaced to the frontend style picker.
-STYLE_INFO: Dict[str, Dict[str, str]] = {
+STYLE_INFO: dict[str, dict[str, str]] = {
     ArtworkStyle.MINIMAL.value: {
         "label": "Minimal Route",
         "description": "Clean single-weight line on a paper white canvas.",
@@ -95,7 +95,7 @@ STYLE_INFO: Dict[str, Dict[str, str]] = {
 }
 
 #: Canvas defaults per style (portrait for the poster, landscape otherwise).
-STYLE_CANVAS: Dict[str, Tuple[int, int]] = {
+STYLE_CANVAS: dict[str, tuple[int, int]] = {
     ArtworkStyle.MINIMAL.value: (1600, 1000),
     ArtworkStyle.NEON.value: (1600, 1000),
     ArtworkStyle.GRADIENT.value: (1600, 1000),
@@ -108,7 +108,7 @@ def style_label(style: str) -> str:
     return STYLE_INFO.get(style, {}).get("label", style.title())
 
 
-def all_styles() -> List[Dict[str, object]]:
+def all_styles() -> list[dict[str, object]]:
     """Style catalogue for ``GET /api/v1/artwork/styles``."""
     return [
         {

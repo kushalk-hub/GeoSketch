@@ -10,8 +10,8 @@ __all__ = [
     "Device",
     "DeviceStatus",
     "GPSPoint",
-    "PointSource",
     "Journey",
     "JourneySource",
     "JourneyStatus",
+    "PointSource",
 ]

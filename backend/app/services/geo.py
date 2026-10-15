@@ -8,7 +8,7 @@ journey, which is far below the error introduced by consumer GPS noise itself.
 from __future__ import annotations
 
 import math
-from typing import Optional, Protocol, Tuple
+from typing import Protocol
 
 from app.core.errors import ValidationFailed
 
@@ -69,7 +69,7 @@ def is_valid_coordinate(latitude: float, longitude: float) -> bool:
     return not is_null_island(lat, lon)
 
 
-def validate_coordinates(latitude: float, longitude: float) -> Tuple[float, float]:
+def validate_coordinates(latitude: float, longitude: float) -> tuple[float, float]:
     """Return ``(lat, lon)`` or raise :class:`ValidationFailed`."""
     if latitude is None or longitude is None:
         raise ValidationFailed(
@@ -102,7 +102,7 @@ def validate_coordinates(latitude: float, longitude: float) -> Tuple[float, floa
     return lat, lon
 
 
-def speed_kmh(distance_m: float, seconds: float) -> Optional[float]:
+def speed_kmh(distance_m: float, seconds: float) -> float | None:
     """Speed in km/h, or ``None`` when the time delta makes it meaningless."""
     if seconds is None or seconds <= 0:
         return None
@@ -130,7 +130,7 @@ def bearing_degrees(lat1: float, lon1: float, lat2: float, lon2: float) -> float
     return (math.degrees(math.atan2(x, y)) + 360.0) % 360.0
 
 
-def point_time(point) -> Optional[object]:
+def point_time(point) -> object | None:
     """Best available timestamp for a point: GPS first, server fallback."""
     return getattr(point, "gps_timestamp", None) or getattr(point, "server_timestamp", None)
 

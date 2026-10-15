@@ -17,15 +17,16 @@ points) so the shape of the route is always preserved.
 
 from __future__ import annotations
 
+import itertools
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional, Sequence, Tuple
 
 from app.artwork.styles import sequence_length
 from app.utils.segmentation import SegmentationResult, segment_route
 
-Point = Tuple[float, float]
+Point = tuple[float, float]
 
 #: Metres per degree of latitude (WGS84 mean) and the equatorial value for
 #: longitude (scaled by cos(lat) at the projection origin).
@@ -43,12 +44,12 @@ class ProcessedRoute:
     width: int
     height: int
     padding: float
-    segments: List[List[Point]] = field(default_factory=list)
+    segments: list[list[Point]] = field(default_factory=list)
 
     origin_latitude: float = 0.0
     origin_longitude: float = 0.0
     scale: float = 1.0  # canvas pixels per metre
-    offset: Tuple[float, float] = (0.0, 0.0)
+    offset: tuple[float, float] = (0.0, 0.0)
 
     source_points: int = 0
     used_points: int = 0
@@ -60,18 +61,18 @@ class ProcessedRoute:
     distance_m: float = 0.0
     duration_seconds: float = 0.0
     moving_seconds: float = 0.0
-    started_at: Optional[datetime] = None
-    finished_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    finished_at: datetime | None = None
 
-    start_point: Optional[Point] = None
-    end_point: Optional[Point] = None
-    start_latitude: Optional[float] = None
-    start_longitude: Optional[float] = None
-    end_latitude: Optional[float] = None
-    end_longitude: Optional[float] = None
+    start_point: Point | None = None
+    end_point: Point | None = None
+    start_latitude: float | None = None
+    start_longitude: float | None = None
+    end_latitude: float | None = None
+    end_longitude: float | None = None
 
-    geo_bounds: Tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
-    projected_bounds: Tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
+    geo_bounds: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
+    projected_bounds: tuple[float, float, float, float] = (0.0, 0.0, 0.0, 0.0)
 
     @property
     def point_count(self) -> int:
@@ -98,7 +99,7 @@ class ProcessedRoute:
             self.offset[1] + (y_m - min_y) * self.scale,
         )
 
-    def processing_summary(self) -> Dict[str, object]:
+    def processing_summary(self) -> dict[str, object]:
         """Transparency block returned with every preview."""
         return {
             "source_points": self.source_points,
@@ -113,9 +114,9 @@ class ProcessedRoute:
         }
 
 
-def _project_points(points: Sequence, origin_lat: float, origin_lon: float) -> List[Point]:
+def _project_points(points: Sequence, origin_lat: float, origin_lon: float) -> list[Point]:
     cos_lat = math.cos(math.radians(origin_lat))
-    projected: List[Point] = []
+    projected: list[Point] = []
     for point in points:
         x_m = (point.longitude - origin_lon) * METRES_PER_DEG_LON * cos_lat
         y_m = -(point.latitude - origin_lat) * METRES_PER_DEG_LAT
@@ -123,7 +124,7 @@ def _project_points(points: Sequence, origin_lat: float, origin_lon: float) -> L
     return projected
 
 
-def _thin_segment(segment: List[Point], min_px: float) -> List[Point]:
+def _thin_segment(segment: list[Point], min_px: float) -> list[Point]:
     """Drop points closer than ``min_px`` to the previous kept point.
 
     First and last points of a segment are always kept, and a point that turns a
@@ -133,7 +134,7 @@ def _thin_segment(segment: List[Point], min_px: float) -> List[Point]:
     if len(segment) <= 2:
         return list(segment)
 
-    kept: List[Point] = [segment[0]]
+    kept: list[Point] = [segment[0]]
     for index in range(1, len(segment) - 1):
         previous_kept = kept[-1]
         candidate = segment[index]
@@ -232,7 +233,7 @@ def process_route(
 
     min_px = min(MAX_THIN_PX, max(MIN_THIN_PX, min_point_distance_m * scale))
 
-    canvas_segments: List[List[Point]] = []
+    canvas_segments: list[list[Point]] = []
     for segment in projected_segments:
         canvas_segment = _thin_segment([_to_canvas_local(x, y) for x, y in segment], min_px)
         route.redundant_removed += max(0, len(segment) - len(canvas_segment))
@@ -257,7 +258,7 @@ def process_route(
 
 def subdivide_route(
     segments: Sequence[Sequence[Point]], steps: int = 120
-) -> List[Tuple[List[Point], float]]:
+) -> list[tuple[list[Point], float]]:
     """Split the route into ~``steps`` equal-length chunks for gradient colouring.
 
     Chunks are produced by resampling along the arc length (not by slicing the
@@ -274,8 +275,8 @@ def subdivide_route(
         return [(flat, 0.0)] if len(flat) >= 2 else []
 
     spacing = max(total / max(2, steps), 0.5)
-    chunks: List[Tuple[List[Point], float]] = []
-    current: List[Point] = []
+    chunks: list[tuple[list[Point], float]] = []
+    current: list[Point] = []
     arc = 0.0
     mark = spacing
 
@@ -284,7 +285,7 @@ def subdivide_route(
             continue
         # A new segment always starts a new chunk (the gap must stay visible).
         current = [segment[0]]
-        for start_point, end_point in zip(segment, segment[1:]):
+        for start_point, end_point in itertools.pairwise(segment):
             length = math.dist(start_point, end_point)
             current.append(end_point)
             arc += length

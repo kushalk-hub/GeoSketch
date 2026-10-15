@@ -6,8 +6,6 @@ export dependency free and produces small, scalable, editable files.
 
 from __future__ import annotations
 
-from typing import List
-
 from app.artwork.colors import normalize_hex
 from app.artwork.styles import ArtSpec, StrokeLayer
 
@@ -34,7 +32,7 @@ def _points(segment) -> str:
     return " ".join(f"{_fmt(x)},{_fmt(y)}" for x, y in segment)
 
 
-def _layer_markup(layer: StrokeLayer, index: int) -> List[str]:
+def _layer_markup(layer: StrokeLayer, index: int) -> list[str]:
     attributes = [
         f'stroke="{normalize_hex(layer.color)}"',
         f'stroke-width="{_fmt(layer.width)}"',
@@ -61,7 +59,7 @@ def _layer_markup(layer: StrokeLayer, index: int) -> List[str]:
 
 def render_svg(spec: ArtSpec) -> str:
     """Serialise an :class:`ArtSpec` to an SVG document."""
-    lines: List[str] = []
+    lines: list[str] = []
     lines.append('<?xml version="1.0" encoding="UTF-8"?>')
     lines.append(
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{spec.width}" '

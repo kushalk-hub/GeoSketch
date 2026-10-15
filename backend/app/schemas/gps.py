@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel, Field, model_validator
 
 from app.schemas.common import ORMModel, UTCDateTime
@@ -21,24 +19,24 @@ class GPSPointIn(BaseModel):
 
     latitude: float = Field(..., ge=-90.0, le=90.0, description="Decimal degrees, WGS84")
     longitude: float = Field(..., ge=-180.0, le=180.0, description="Decimal degrees, WGS84")
-    altitude: Optional[float] = Field(
+    altitude: float | None = Field(
         default=None, ge=-500.0, le=20000.0, description="Metres above mean sea level"
     )
-    speed_kmh: Optional[float] = Field(default=None, ge=0.0, le=1200.0)
-    satellites: Optional[int] = Field(default=None, ge=0, le=64)
-    hdop: Optional[float] = Field(default=None, ge=0.0, le=100.0)
+    speed_kmh: float | None = Field(default=None, ge=0.0, le=1200.0)
+    satellites: int | None = Field(default=None, ge=0, le=64)
+    hdop: float | None = Field(default=None, ge=0.0, le=100.0)
     #: UTC time reported by the GPS module; absent until the first valid fix.
-    timestamp: Optional[UTCDateTime] = None
+    timestamp: UTCDateTime | None = None
     #: Optional when the X-Device-Id header is supplied instead.
-    device_id: Optional[str] = Field(default=None, max_length=64)
+    device_id: str | None = Field(default=None, max_length=64)
     #: Monotonic counter from the device; used for idempotent retries.
-    client_point_id: Optional[str] = Field(default=None, max_length=64)
+    client_point_id: str | None = Field(default=None, max_length=64)
     #: Attach to a specific journey instead of the device's active journey.
-    journey_id: Optional[int] = None
-    fix_quality: Optional[int] = Field(default=None, ge=0, le=9)
+    journey_id: int | None = None
+    fix_quality: int | None = Field(default=None, ge=0, le=9)
 
     @model_validator(mode="after")
-    def _reject_null_island(self) -> "GPSPointIn":
+    def _reject_null_island(self) -> GPSPointIn:
         # A NEO-6M without a fix streams 0.0/0.0; never accept it as a position.
         if abs(self.latitude) < 1e-7 and abs(self.longitude) < 1e-7:
             raise ValueError(
@@ -51,18 +49,18 @@ class GPSPointIn(BaseModel):
 class GPSPointOut(ORMModel):
     id: int
     journey_id: int
-    device_id: Optional[str] = None
+    device_id: str | None = None
     sequence: int
     latitude: float
     longitude: float
-    altitude: Optional[float] = None
-    speed_kmh: Optional[float] = None
-    satellites: Optional[int] = None
-    gps_timestamp: Optional[UTCDateTime] = None
+    altitude: float | None = None
+    speed_kmh: float | None = None
+    satellites: int | None = None
+    gps_timestamp: UTCDateTime | None = None
     server_timestamp: UTCDateTime
     source: str
     is_plausible: bool
-    rejected_reason: Optional[str] = None
+    rejected_reason: str | None = None
 
 
 class GPSIngestResponse(BaseModel):
@@ -76,11 +74,11 @@ class GPSIngestResponse(BaseModel):
     stored: bool
     duplicate: bool
     journey_id: int
-    point_id: Optional[int] = None
-    sequence: Optional[int] = None
+    point_id: int | None = None
+    sequence: int | None = None
     server_timestamp: UTCDateTime
-    reason: Optional[str] = None
-    message: Optional[str] = None
+    reason: str | None = None
+    message: str | None = None
 
 
 class GPSPointBulkIn(BaseModel):

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import List
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
@@ -27,11 +26,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/devices", tags=["Devices"], responses=COMMON_ERROR_RESPONSES)
 
 
-@router.get("", response_model=List[DeviceOut], summary="List registered devices")
+@router.get("", response_model=list[DeviceOut], summary="List registered devices")
 def get_devices(
     db: Session = Depends(get_db),
     owner: str = Depends(current_owner),
-) -> List[DeviceOut]:
+) -> list[DeviceOut]:
     return list_devices(db, owner=owner)
 
 
@@ -106,12 +105,12 @@ def heartbeat(
 
 @router.post(
     "/sync",
-    response_model=List[DeviceOut],
+    response_model=list[DeviceOut],
     summary="Re-synchronise devices from the environment configuration",
 )
 def sync_devices(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
-) -> List[DeviceOut]:
+) -> list[DeviceOut]:
     sync_devices_from_settings(db, settings)
     return list_devices(db)

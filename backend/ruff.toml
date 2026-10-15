@@ -1,0 +1,30 @@
+# GeoSketch backend - Ruff lint configuration.
+# Explicit rules so lint behaviour never depends on Ruff's changing defaults.
+#   ruff check app tests        # report
+#   ruff check app tests --fix  # apply safe fixes
+
+target-version = "py311"
+line-length = 100
+extend-exclude = [".venv", "geosketch.db"]
+
+[lint]
+# E/W: pycodestyle   F: pyflakes   I: isort   UP: pyupgrade
+# B: bugbear         C4: comprehensions        SIM: flake8-simplify
+# RUF: Ruff-specific rules
+select = ["E", "W", "F", "I", "B", "C4", "SIM", "UP", "RUF"]
+
+ignore = [
+    # Line length is not policed; the code uses wide, readable lines on purpose.
+    "E501",
+    # Docstring line length is likewise not policed.
+    "W505",
+    # FastAPI intentionally validates argument defaults via Depends()/Query()/Header().
+    "B008",
+]
+
+[lint.per-file-ignores]
+# Tests freely reuse fixtures and helper names.
+"tests/*" = ["RUF012"]
+
+[lint.isort]
+known-first-party = ["app"]

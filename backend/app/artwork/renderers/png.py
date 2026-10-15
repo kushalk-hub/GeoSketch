@@ -11,13 +11,13 @@ composite instead of 140.
 from __future__ import annotations
 
 import io
+from collections.abc import Sequence
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple  # noqa: F401
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
-from app.artwork.colors import hex_to_rgb, normalize_hex
+from app.artwork.colors import hex_to_rgb
 from app.artwork.styles import ArtSpec, StrokeLayer
 
 #: Supersampling factor (2 keeps 1600x1000 canvases well under a second).
@@ -57,17 +57,17 @@ def _load_font(size: int, bold: bool) -> ImageFont.FreeTypeFont:
         return ImageFont.load_default()
 
 
-def _rgba(color: str, opacity: float) -> Tuple[int, int, int, int]:
+def _rgba(color: str, opacity: float) -> tuple[int, int, int, int]:
     r, g, b = hex_to_rgb(color)
-    return (r, g, b, max(0, min(255, int(round(opacity * 255)))))
+    return (r, g, b, max(0, min(255, round(opacity * 255))))
 
 
-def _scaled(points: Sequence[Tuple[float, float]], factor: float) -> List[Tuple[float, float]]:
+def _scaled(points: Sequence[tuple[float, float]], factor: float) -> list[tuple[float, float]]:
     return [(x * factor, y * factor) for x, y in points]
 
 
 def _draw_layer(draw: ImageDraw.ImageDraw, layer: StrokeLayer, factor: float) -> None:
-    width = max(1, int(round(layer.width * factor)))
+    width = max(1, round(layer.width * factor))
     fill = _rgba(layer.color, 1.0)
     radius = layer.width * factor / 2.0
     for segment in layer.segments:
@@ -88,9 +88,9 @@ def _draw_layer(draw: ImageDraw.ImageDraw, layer: StrokeLayer, factor: float) ->
 def _draw_text(
     draw: ImageDraw.ImageDraw,
     text: str,
-    xy: Tuple[float, float],
+    xy: tuple[float, float],
     font: ImageFont.FreeTypeFont,
-    fill: Tuple[int, int, int, int],
+    fill: tuple[int, int, int, int],
     anchor: str,
     letter_spacing: float,
 ) -> None:
@@ -106,12 +106,12 @@ def _draw_text(
         x -= total / 2.0
     elif anchor == "end":
         x -= total
-    for char, char_width in zip(text, widths):
+    for char, char_width in zip(text, widths, strict=False):
         draw.text((x, y), char, font=font, fill=fill, anchor="ls")
         x += char_width + spacing
 
 
-def render_png(spec: ArtSpec, supersample: int = SUPERSAMPLE) -> bytes:  # noqa: C901
+def render_png(spec: ArtSpec, supersample: int = SUPERSAMPLE) -> bytes:
     """Render an :class:`ArtSpec` to PNG bytes."""
     factor = max(1, int(supersample))
     canvas_size = (spec.width * factor, spec.height * factor)
@@ -167,7 +167,9 @@ def render_png(spec: ArtSpec, supersample: int = SUPERSAMPLE) -> bytes:  # noqa:
         if layer.blur > 0:
             overlay = overlay.filter(ImageFilter.GaussianBlur(radius=layer.blur * factor))
         if layer.opacity < 0.999:
-            alpha = overlay.getchannel("A").point(lambda value: int(value * layer.opacity))
+            alpha = overlay.getchannel("A").point(
+                lambda value, opacity=layer.opacity: int(value * opacity)
+            )
             overlay.putalpha(alpha)
         base = Image.alpha_composite(base, overlay)
 
@@ -191,7 +193,7 @@ def render_png(spec: ArtSpec, supersample: int = SUPERSAMPLE) -> bytes:  # noqa:
     texts = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
     pen = ImageDraw.Draw(texts)
     for text in spec.texts:
-        font = _load_font(max(6, int(round(text.size * factor))), text.weight == "bold")
+        font = _load_font(max(6, round(text.size * factor)), text.weight == "bold")
         _draw_text(
             pen,
             text.text,
@@ -218,7 +220,7 @@ def render_png_file(spec: ArtSpec, path: Path, supersample: int = SUPERSAMPLE) -
     return path
 
 
-def available_font_source() -> Optional[str]:  # pragma: no cover - diagnostics
+def available_font_source() -> str | None:  # pragma: no cover - diagnostics
     for candidate in _FONT_BOLD + _FONT_REGULAR:
         if Path(candidate).exists():
             return candidate

@@ -7,7 +7,6 @@ import logging
 import re
 import uuid
 from pathlib import Path
-from typing import List, Optional, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -60,8 +59,8 @@ def _load_route_points(db: Session, journey: Journey):
 
 
 def render_for_journey(
-    db: Session, journey: Journey, request: ArtworkRequest, *, settings: Optional[Settings] = None
-) -> Tuple[RenderResult, ArtworkOptions, int]:
+    db: Session, journey: Journey, request: ArtworkRequest, *, settings: Settings | None = None
+) -> tuple[RenderResult, ArtworkOptions, int]:
     """Process the journey and render the requested style.
 
     Returns the render result, the options used, and the number of source points.
@@ -82,7 +81,7 @@ def render_for_journey(
 
 
 def preview_artwork(
-    db: Session, journey: Journey, request: ArtworkRequest, *, settings: Optional[Settings] = None
+    db: Session, journey: Journey, request: ArtworkRequest, *, settings: Settings | None = None
 ) -> ArtworkPreview:
     """Render an in-memory preview (SVG only, nothing written to disk)."""
     preview_request = request.model_copy(update={"save": False})
@@ -105,11 +104,11 @@ def preview_artwork(
 
 
 def generate_artwork(
-    db: Session, journey: Journey, request: ArtworkRequest, *, settings: Optional[Settings] = None
-) -> Tuple[Artwork, RenderResult]:
+    db: Session, journey: Journey, request: ArtworkRequest, *, settings: Settings | None = None
+) -> tuple[Artwork, RenderResult]:
     """Render and persist an artwork (PNG + SVG) for a journey."""
     settings = settings or get_settings()
-    result, options, source_points = render_for_journey(
+    result, options, _source_points = render_for_journey(
         db, journey, request, settings=settings
     )
 
@@ -165,7 +164,7 @@ def generate_artwork(
     return artwork, result
 
 
-def list_artworks(db: Session, journey_id: int) -> List[Artwork]:
+def list_artworks(db: Session, journey_id: int) -> list[Artwork]:
     return list(
         db.scalars(
             select(Artwork)
@@ -175,14 +174,14 @@ def list_artworks(db: Session, journey_id: int) -> List[Artwork]:
     )
 
 
-def get_artwork(db: Session, artwork_id: int, *, journey: Optional[Journey] = None) -> Artwork:
+def get_artwork(db: Session, artwork_id: int, *, journey: Journey | None = None) -> Artwork:
     artwork = db.get(Artwork, artwork_id)
     if artwork is None or (journey is not None and artwork.journey_id != journey.id):
         raise NotFoundError(f"artwork {artwork_id} not found", code="artwork_not_found")
     return artwork
 
 
-def artwork_file(artwork: Artwork, export_format: str, *, settings: Optional[Settings] = None) -> Path:
+def artwork_file(artwork: Artwork, export_format: str, *, settings: Settings | None = None) -> Path:
     """Resolve the file for an artwork, refusing anything outside the store."""
     settings = settings or get_settings()
     export_format = (export_format or artwork.export_format or "png").lower()
@@ -207,7 +206,7 @@ def artwork_file(artwork: Artwork, export_format: str, *, settings: Optional[Set
     return path
 
 
-def artwork_to_out(artwork: Artwork, *, settings: Optional[Settings] = None) -> ArtworkOut:
+def artwork_to_out(artwork: Artwork, *, settings: Settings | None = None) -> ArtworkOut:
     settings = settings or get_settings()
     prefix = settings.api_v1_prefix
     model = ArtworkOut.model_validate(artwork)
@@ -220,7 +219,7 @@ def artwork_to_out(artwork: Artwork, *, settings: Optional[Settings] = None) -> 
     return model
 
 
-def delete_artwork_files(artworks: List[Artwork], *, settings: Optional[Settings] = None) -> int:
+def delete_artwork_files(artworks: list[Artwork], *, settings: Settings | None = None) -> int:
     """Remove the stored files for a set of artworks (used when deleting a journey)."""
     settings = settings or get_settings()
     removed = 0

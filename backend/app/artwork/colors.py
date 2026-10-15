@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import re
-from typing import List, Sequence, Tuple
+from collections.abc import Sequence
 
-RGB = Tuple[int, int, int]
+RGB = tuple[int, int, int]
 
 _HEX_RE = re.compile(r"^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
@@ -28,7 +28,7 @@ def hex_to_rgb(value: str) -> RGB:
 
 
 def rgb_to_hex(rgb: Sequence[float]) -> str:
-    channels = [max(0, min(255, int(round(channel)))) for channel in rgb[:3]]
+    channels = [max(0, min(255, round(channel))) for channel in rgb[:3]]
     return "#{:02x}{:02x}{:02x}".format(*channels)
 
 
@@ -72,5 +72,5 @@ def readable_on(background: str) -> str:
     return "#0b1220" if not is_dark(background) else "#f8fafc"
 
 
-def default_gradient_stops() -> List[str]:
+def default_gradient_stops() -> list[str]:
     return ["#22d3ee", "#818cf8", "#f472b6"]

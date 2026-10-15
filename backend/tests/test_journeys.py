@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import UTC
+
 import pytest
 
 from tests.conftest import add_demo_points, gps_point
@@ -30,9 +32,9 @@ def test_create_journey_without_start_is_paused(client):
 
 def test_demo_journey_can_pin_its_start_time(client):
     """Demo replay/import pins the start so the sample's duration is realistic."""
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
-    start = (datetime.now(timezone.utc) - timedelta(minutes=40)).replace(microsecond=0)
+    start = (datetime.now(UTC) - timedelta(minutes=40)).replace(microsecond=0)
     stamp = start.isoformat().replace("+00:00", "Z")
     body = client.post(JOURNEYS, json={"source": "demo", "started_at": stamp}).json()
     assert body["started_at"] == stamp
@@ -49,9 +51,9 @@ def test_hardware_journey_cannot_pin_its_start_time(client):
 
 
 def test_demo_start_time_cannot_be_in_the_future(client):
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
-    future = (datetime.now(timezone.utc) + timedelta(hours=3)).isoformat().replace("+00:00", "Z")
+    future = (datetime.now(UTC) + timedelta(hours=3)).isoformat().replace("+00:00", "Z")
     response = client.post(JOURNEYS, json={"source": "demo", "started_at": future})
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "started_at_in_future"

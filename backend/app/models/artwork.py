@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -43,7 +42,7 @@ class Artwork(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
-    journey: Mapped["Journey"] = relationship(back_populates="artworks")  # noqa: F821
+    journey: Mapped[Journey] = relationship(back_populates="artworks")  # noqa: F821
 
     __table_args__ = (Index("ix_artworks_journey_created", "journey_id", "created_at"),)
 

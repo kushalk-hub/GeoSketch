@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import enum
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import (
     Boolean,
@@ -22,7 +21,7 @@ from app.database.base import Base
 from app.utils.time import utcnow
 
 
-class PointSource(str, enum.Enum):
+class PointSource(enum.StrEnum):
     HARDWARE = "hardware"
     DEMO = "demo"
 
@@ -46,28 +45,28 @@ class GPSPoint(Base):
     journey_id: Mapped[int] = mapped_column(
         ForeignKey("journeys.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    device_id: Mapped[Optional[str]] = mapped_column(
+    device_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("devices.device_id", ondelete="SET NULL"), nullable=True, index=True
     )
 
     sequence: Mapped[int] = mapped_column(Integer, nullable=False)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
-    altitude: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    speed_kmh: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    satellites: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    altitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    speed_kmh: Mapped[float | None] = mapped_column(Float, nullable=True)
+    satellites: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    gps_timestamp: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    gps_timestamp: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     server_timestamp: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
     source: Mapped[str] = mapped_column(String(16), default=PointSource.HARDWARE.value)
-    client_point_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    client_point_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     dedupe_key: Mapped[str] = mapped_column(String(64), nullable=False)
 
     is_plausible: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    rejected_reason: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    rejected_reason: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
-    journey: Mapped["Journey"] = relationship(back_populates="points")  # noqa: F821
+    journey: Mapped[Journey] = relationship(back_populates="points")  # noqa: F821
 
     __table_args__ = (
         # Idempotency: the same physical fix can never be stored twice, even if

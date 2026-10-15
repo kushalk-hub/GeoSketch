@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import time
 from collections import defaultdict, deque
-from typing import Callable, Deque, Dict
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
@@ -68,7 +68,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         settings = get_settings()
         self.limit = requests or settings.rate_limit_requests
         self.window = window_seconds or settings.rate_limit_window_seconds
-        self._hits: Dict[str, Deque[float]] = defaultdict(deque)
+        self._hits: dict[str, deque[float]] = defaultdict(deque)
 
     def _key(self, request: Request) -> str:
         device_id = request.headers.get("x-device-id")

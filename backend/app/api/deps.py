@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from fastapi import Depends, Header
 from sqlalchemy.orm import Session
 
@@ -19,15 +17,15 @@ def settings_dependency() -> Settings:
 
 
 def current_owner(
-    x_owner_key: Optional[str] = Header(default=None, alias="X-Owner-Key"),
+    x_owner_key: str | None = Header(default=None, alias="X-Owner-Key"),
 ) -> str:
     """Ownership scope for journey queries (single tenant by default)."""
     return owner_from_header(x_owner_key, get_settings().default_owner)
 
 
 def require_device(
-    x_device_id: Optional[str] = Header(default=None, alias="X-Device-Id"),
-    x_device_key: Optional[str] = Header(default=None, alias="X-Device-Key"),
+    x_device_id: str | None = Header(default=None, alias="X-Device-Id"),
+    x_device_key: str | None = Header(default=None, alias="X-Device-Key"),
     db: Session = Depends(get_db),
 ) -> Device:
     """Authenticate the ESP32-C3 from its headers."""

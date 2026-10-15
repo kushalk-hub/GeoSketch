@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
@@ -46,16 +44,16 @@ def create_journey(
     return journey_service.to_journey_out(journey, artwork_count=0)
 
 
-@router.get("", response_model=List[JourneyOut], summary="List journeys")
+@router.get("", response_model=list[JourneyOut], summary="List journeys")
 def list_journeys(
     db: Session = Depends(get_db),
     owner: str = Depends(current_owner),
-    journey_status: Optional[str] = Query(default=None, alias="status"),
-    source: Optional[str] = Query(default=None, pattern="^(hardware|demo)$"),
+    journey_status: str | None = Query(default=None, alias="status"),
+    source: str | None = Query(default=None, pattern="^(hardware|demo)$"),
     saved_only: bool = Query(default=False),
     limit: int = Query(default=50, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
-) -> List[JourneyOut]:
+) -> list[JourneyOut]:
     journeys, _total = journey_service.list_journeys(
         db,
         owner=owner,
@@ -263,7 +261,7 @@ def preview_artwork(
 
 @router.get(
     "/{journey_id}/artworks",
-    response_model=List[ArtworkOut],
+    response_model=list[ArtworkOut],
     summary="List generated artworks for a journey",
 )
 def list_artworks(
@@ -271,7 +269,7 @@ def list_artworks(
     db: Session = Depends(get_db),
     owner: str = Depends(current_owner),
     settings: Settings = Depends(get_settings),
-) -> List[ArtworkOut]:
+) -> list[ArtworkOut]:
     journey = _get(db, journey_id, owner)
     return [
         artwork_service.artwork_to_out(artwork, settings=settings)

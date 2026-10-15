@@ -15,6 +15,7 @@ from __future__ import annotations
 import os
 import shutil
 import tempfile
+from datetime import UTC
 from pathlib import Path
 
 import pytest
@@ -133,9 +134,9 @@ def gps_point(
     **extra,
 ) -> dict:
     """Build a firmware-style payload with a UTC GPS timestamp."""
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
-    stamp = datetime(2026, 10, 15, 10, 30, 0, tzinfo=timezone.utc) + timedelta(seconds=seconds)
+    stamp = datetime(2026, 10, 15, 10, 30, 0, tzinfo=UTC) + timedelta(seconds=seconds)
     payload = {
         "latitude": latitude,
         "longitude": longitude,
