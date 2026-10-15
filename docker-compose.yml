@@ -1,0 +1,69 @@
+# GeoSketch - optional Docker setup.
+#
+# Docker is NOT required for local development (see docs/setup_guide.md for the
+# plain Windows workflow). It only containerises the backend and the frontend:
+# the ESP32-C3 is still flashed from the host with Arduino IDE over USB.
+#
+#   docker compose up --build
+#
+#   API       http://127.0.0.1:8000/docs
+#   Dashboard http://127.0.0.1:5173
+#
+# Set the device key before starting (must match GEOSKETCH_DEVICE_KEY in the
+# firmware config.h). Values below are development placeholders only:
+#   PowerShell:  $env:GEOSKETCH_DEVICE_KEYS = "geosketch-01:<your-key>"
+#   bash:        export GEOSKETCH_DEVICE_KEYS="geosketch-01:<your-key>"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: geosketch-backend
+    environment:
+      # SQLite file lives in a named volume; sample routes and artwork exports
+      # are bind-mounted from the repository so they survive a rebuild.
+      GEOSKETCH_DATABASE_URL: sqlite:////db/geosketch.db
+      GEOSKETCH_ARTWORK_DIR: /data/artworks
+      GEOSKETCH_SAMPLE_ROUTES_DIR: /data/sample_routes
+      GEOSKETCH_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      GEOSKETCH_DEVICE_KEYS: ${GEOSKETCH_DEVICE_KEYS:-geosketch-01:CHANGE-ME-device-key-please}
+      GEOSKETCH_DEBUG: "false"
+    ports:
+      - "8000:8000" # also reachable from the ESP32-C3 via the host's LAN IP
+    volumes:
+      - geosketch-db:/db
+      - ./data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health').read()",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: geosketch-frontend
+    environment:
+      # The browser (on the host) talks to the published backend port.
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://127.0.0.1:8000}
+      VITE_DEVICE_ID: ${VITE_DEVICE_ID:-geosketch-01}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src # live edit without a rebuild
+      - /app/node_modules # keep the image's dependencies
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  geosketch-db:

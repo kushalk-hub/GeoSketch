@@ -1,0 +1,19 @@
+# GeoSketch - normalize line endings.
+# Store LF in the repository and check out LF everywhere so Windows, Linux and
+# macOS contributors (and the Arduino/ESP-IDF toolchain) stay consistent.
+* text=auto eol=lf
+
+# Generated / binary assets - never normalise or diff as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.db binary
+*.bin binary
+*.elf binary
+*.hex binary

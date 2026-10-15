@@ -1,0 +1,22 @@
+# GeoSketch backend dependencies (Python 3.11+).
+# Versions are lower bounds so `pip install -r requirements.txt` works with the
+# current releases; pin exactly if you need fully reproducible installs.
+
+# --- Web framework -----------------------------------------------------------
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+
+# --- Validation / settings ---------------------------------------------------
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+
+# --- Persistence (SQLite now, PostgreSQL is a DATABASE_URL swap) -------------
+SQLAlchemy>=2.0.30
+
+# --- Artwork rendering (PNG raster output; SVG is emitted directly) ----------
+pillow>=10.4.0
+
+# --- Testing -----------------------------------------------------------------
+pytest>=8.0.0
+httpx>=0.27.0

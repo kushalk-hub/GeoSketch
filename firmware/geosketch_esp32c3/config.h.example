@@ -1,0 +1,65 @@
+// ===========================================================================
+// GeoSketch ESP32-C3 firmware configuration
+//
+// 1. Copy this file to `config.h` (same folder as the .ino).
+// 2. Fill in your Wi-Fi credentials, backend URL and device key.
+// 3. `config.h` is git-ignored - never commit real credentials.
+// ===========================================================================
+#pragma once
+
+// --- Wi-Fi -----------------------------------------------------------------
+// The ESP32-C3 only supports 2.4 GHz networks (not 5 GHz).
+#define GEOSKETCH_WIFI_SSID       "YOUR_WIFI_NAME"
+#define GEOSKETCH_WIFI_PASSWORD   "YOUR_WIFI_PASSWORD"
+
+// --- Backend ---------------------------------------------------------------
+// Use the LAN IP of the computer running the FastAPI backend, e.g.
+//   Windows: ipconfig   -> IPv4 Address
+// http:// is fine on a trusted LAN. For HTTPS use WiFiClientSecure with the
+// root CA (see firmware/README.md).
+#define GEOSKETCH_API_BASE_URL    "http://192.168.1.50:8000"
+#define GEOSKETCH_API_PATH        "/api/v1/gps/points"
+
+// --- Device identity -------------------------------------------------------
+// GEOSKETCH_DEVICE_ID must match an entry of GEOSKETCH_DEVICE_KEYS in the
+// backend .env file; GEOSKETCH_DEVICE_KEY is the plaintext API key.
+#define GEOSKETCH_DEVICE_ID       "geosketch-01"
+#define GEOSKETCH_DEVICE_KEY      "CHANGE-ME-device-key-please"
+
+// --- GPS wiring (UART1) ----------------------------------------------------
+// Default wiring documented in docs/hardware_connections.md:
+//   NEO-6M TX  -> GPIO4 (ESP32-C3 UART1 RX)
+//   NEO-6M RX  -> GPIO5 (ESP32-C3 UART1 TX)   [optional]
+//   NEO-6M GND -> GND,  NEO-6M VCC -> 3V3/5V (check your module)
+// GPIO20/21 (UART0) stay free for the USB serial monitor.
+#define GEOSKETCH_GPS_RX_PIN      4
+#define GEOSKETCH_GPS_TX_PIN      5
+#define GEOSKETCH_GPS_BAUD        9600
+
+// --- Transmission policy ---------------------------------------------------
+// A fix is transmitted when it has moved at least this far since the last
+// transmission AND the minimum interval has elapsed...
+#define GEOSKETCH_MIN_SEND_DISTANCE_M   8.0f
+#define GEOSKETCH_MIN_SEND_INTERVAL_MS  5000UL
+// ...and at least this often, so a stationary device still reports liveness.
+#define GEOSKETCH_MAX_SEND_INTERVAL_MS  30000UL
+
+// --- GPS quality gate ------------------------------------------------------
+// A fix is only transmitted when it is valid, fresh and has enough satellites.
+#define GEOSKETCH_MAX_FIX_AGE_MS    2500UL
+#define GEOSKETCH_MIN_SATELLITES    4
+#define GEOSKETCH_MAX_HDOP          8.0f
+
+// --- Buffering / retry -----------------------------------------------------
+// Points that could not be sent are kept in RAM (oldest first) and retried.
+#define GEOSKETCH_QUEUE_SIZE        50
+#define GEOSKETCH_FLUSH_BATCH       3
+#define GEOSKETCH_HTTP_TIMEOUT_MS   6000
+#define GEOSKETCH_RETRY_MIN_MS      2000UL
+#define GEOSKETCH_RETRY_MAX_MS      60000UL
+// Heartbeat period for the serial monitor status line.
+#define GEOSKETCH_STATUS_INTERVAL_MS 10000UL
+
+// --- Serial ----------------------------------------------------------------
+#define GEOSKETCH_SERIAL_BAUD       115200
+#define GEOSKETCH_DEBUG             1

@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------------------
+# GeoSketch - secrets and local configuration (NEVER commit credentials)
+# ---------------------------------------------------------------------------
+.env
+.env.local
+*.env
+!.env.example
+firmware/geosketch_esp32c3/config.h
+
+# ---------------------------------------------------------------------------
+# Python / backend
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# SQLite databases (runtime data, not source)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite3
+
+# ---------------------------------------------------------------------------
+# Node / frontend
+# ---------------------------------------------------------------------------
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------------------------------------------------------------------------
+# Generated artwork exports (data/artworks is a runtime output directory)
+# ---------------------------------------------------------------------------
+data/artworks/*
+!data/artworks/.gitkeep
+
+# ---------------------------------------------------------------------------
+# Arduino / embedded tooling
+# ---------------------------------------------------------------------------
+*.elf
+*.bin
+*.hex
+build/
+.arduino/
+Arduino/
+*.hprof
+
+# ---------------------------------------------------------------------------
+# Editors / OS
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

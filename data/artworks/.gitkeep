@@ -1,0 +1,4 @@
+# Generated artwork exports (PNG / SVG) are written here at runtime.
+# Everything in this directory is git-ignored except this placeholder:
+#   GET  /api/v1/artworks/{id}/download?format=png|svg
+#   POST /api/v1/journeys/{id}/artwork

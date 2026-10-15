@@ -1,0 +1,17 @@
+# Docker build context = ./frontend (see ../docker-compose.yml).
+
+.env
+.env.local
+*.env
+!*.env.example
+
+node_modules/
+dist/
+dist-ssr/
+.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+Dockerfile
+.dockerignore
