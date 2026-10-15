@@ -12,12 +12,14 @@ PNG and SVG.
 Physical movement → GPS satellites → NEO-6M → ESP32-C3 → Wi-Fi → FastAPI → SQLite → Web app → Route artwork
 ```
 
-> **Verification status.** The backend (108 automated tests), the firmware logic, the
-> frontend build and the whole software pipeline were verified end to end on this machine,
-> including simulated ESP32-C3 HTTP ingestion, artworks in all five styles exported as PNG +
-> SVG, and a scripted browser run of the real dashboard (`frontend/scripts/ui-smoke-test.mjs`).
-> Steps 1–3 of the acceptance criteria (a physical NEO-6M obtaining real fixes outdoors) can
-> only be signed off with the hardware on the bench: see
+> **Verification status.** The backend (108 automated tests, Ruff-clean, ≥ 85 % coverage), the
+> firmware logic, the frontend build and the whole software pipeline were verified end to end on
+> this machine, including simulated ESP32-C3 HTTP ingestion, artworks in all five styles exported
+> as PNG + SVG, and a scripted browser run of the real dashboard
+> (`frontend/scripts/ui-smoke-test.mjs`). The frontend also carries 65 unit tests (ESLint + strict
+> TypeScript + Vitest coverage gate). Every push and pull request runs these checks in CI
+> (`.github/workflows/ci.yml`). Steps 1–3 of the acceptance criteria (a physical NEO-6M obtaining
+> real fixes outdoors) can only be signed off with the hardware on the bench: see
 > [Hardware test procedure](#hardware-test-procedure) and
 > [`docs/troubleshooting.md`](docs/troubleshooting.md#verifying-hardware). Anything labelled
 > **DEMO MODE** in the UI comes from bundled sample data, never from a device.
@@ -605,11 +607,13 @@ measurement.
 ## Running the tests
 
 Backend (108 tests — validation, parsing, distance, duplicates, jump detection, journey
-lifecycle, artwork, PNG/SVG export, API errors):
+lifecycle, artwork, PNG/SVG export, API errors). Linting is Ruff and the suite enforces a
+coverage floor of 85 % (currently ≈ 92 %):
 
 ```powershell
 cd backend
-.venv\Scripts\python -m pytest -q          # 108 passed
+.venv\Scripts\python -m ruff check app tests   # lint
+.venv\Scripts\python -m pytest -q              # 108 passed, coverage >= 85%
 ```
 
 | File | Tests | Covers |
@@ -621,16 +625,19 @@ cd backend
 | `tests/test_artwork.py` | 18 | All five styles, customisation, SVG/PNG rendering, no-canvas/empty-route edge cases. |
 | `tests/test_demo_and_api.py` | 19 | Sample routes, demo provenance isolation, health/docs, error contract, rate limiting. |
 
-Frontend:
+Frontend (65 unit tests — geometry, formatting, the typed API client and every hook). ESLint,
+strict TypeScript, a Vitest coverage gate and the production build all run in CI:
 
 ```powershell
 cd frontend
-npm run typecheck
-npm run build
+npm run lint          # eslint
+npm run typecheck     # tsc --noEmit
+npm run coverage      # vitest + coverage gate
+npm run build         # tsc --noEmit && vite build
 ```
 
-Browser UI smoke test (drives the real dashboard through Chrome DevTools Protocol — recording
-controls, demo replay, artwork studio and downloads):
+Browser UI smoke test (drives the real dashboard through Chrome DevTools Protocol —
+recording controls, demo replay, artwork studio and downloads):
 
 ```powershell
 # 1. start the backend and `npm run dev`, then a debug Chrome:
@@ -643,7 +650,8 @@ npm run ui:smoke
 ```
 
 Test plan, mock-GPS strategy and the outdoor procedure:
-[`docs/testing.md`](docs/testing.md).
+[`docs/testing.md`](docs/testing.md). All of the above run automatically on every push and pull
+request via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Hardware test procedure
 
@@ -759,7 +767,8 @@ GeoSketch/
 │   │   └── utils/                    # segmentation, formatting, time
 │   ├── tests/                        # pytest suite (108 tests)
 │   ├── requirements.txt
-│   ├── pytest.ini
+│   ├── pytest.ini                    # coverage gate (>= 85%)
+│   ├── ruff.toml                     # lint configuration
 │   └── .env.example
 ├── frontend/
 │   ├── src/
@@ -769,10 +778,14 @@ GeoSketch/
 │   │   ├── hooks/                    # useDeviceStatus, useJourney, useRecorder, useDemoReplay, useToasts
 │   │   ├── services/api.ts           # typed API client
 │   │   ├── types/                    # shared API types
-│   │   └── utils/                    # format, geo
+│   │   ├── utils/                    # format, geo
+│   │   └── test/setup.ts             # vitest + testing-library setup
 │   ├── scripts/ui-smoke-test.mjs     # scripted browser smoke test
-│   ├── package.json
-│   └── vite.config.ts
+│   ├── eslint.config.js              # eslint flat config
+│   ├── vite.config.ts                # build + vitest/coverage configuration
+│   ├── package.json                  # lint / typecheck / test / coverage / build scripts
+│   └── */*.test.ts(x)                # 65 unit tests
+├── .github/workflows/ci.yml          # CI: backend lint+tests, frontend lint+types+tests+build
 ├── data/
 │   ├── sample_routes/                # bundled demo routes + generator
 │   └── artworks/                     # generated PNG/SVG exports (runtime output)

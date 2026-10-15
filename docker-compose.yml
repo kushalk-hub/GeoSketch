@@ -10,7 +10,8 @@
 #   Dashboard http://127.0.0.1:5173
 #
 # Set the device key before starting (must match GEOSKETCH_DEVICE_KEY in the
-# firmware config.h). Values below are development placeholders only:
+# firmware config.h). Compose refuses to start without it, so a placeholder key
+# can never reach a running stack:
 #   PowerShell:  $env:GEOSKETCH_DEVICE_KEYS = "geosketch-01:<your-key>"
 #   bash:        export GEOSKETCH_DEVICE_KEYS="geosketch-01:<your-key>"
 
@@ -26,7 +27,7 @@ services:
       GEOSKETCH_ARTWORK_DIR: /data/artworks
       GEOSKETCH_SAMPLE_ROUTES_DIR: /data/sample_routes
       GEOSKETCH_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
-      GEOSKETCH_DEVICE_KEYS: ${GEOSKETCH_DEVICE_KEYS:-geosketch-01:CHANGE-ME-device-key-please}
+      GEOSKETCH_DEVICE_KEYS: ${GEOSKETCH_DEVICE_KEYS:?set GEOSKETCH_DEVICE_KEYS to "device-id:api-key" before starting}
       GEOSKETCH_DEBUG: "false"
     ports:
       - "8000:8000" # also reachable from the ESP32-C3 via the host's LAN IP

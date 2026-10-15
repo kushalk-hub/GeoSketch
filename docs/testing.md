@@ -1,12 +1,12 @@
 # Testing GeoSketch
 
 Three layers are tested separately, because they fail for different reasons: the **backend**
-(pure logic + HTTP), the **frontend** (build + scripted browser run) and the **hardware**
-(the only part that needs sky visibility and cannot be faked honestly).
+(pure logic + HTTP), the **frontend** (lint + types + unit tests + scripted browser run) and the
+**hardware** (the only part that needs sky visibility and cannot be faked honestly).
 
 ```mermaid
 graph LR
-    A["pytest (108 tests)<br/>validation · ingest · journeys · artwork · API"] --> B["frontend typecheck + build"]
+    A["pytest (108 tests)<br/>validation · ingest · journeys · artwork · API"] --> B["eslint + tsc + vitest (65 tests)"]
     B --> C["scripted browser smoke test<br/>real dashboard, real API"]
     C --> D["outdoor hardware procedure<br/>ESP32-C3 + NEO-6M"]
     E["mock GPS source<br/>(HTTP replay of sample routes)"] --> C
@@ -14,8 +14,11 @@ graph LR
 
 | Layer | Command | Hardware needed |
 | --- | --- | --- |
-| Backend | `cd backend && .venv\Scripts\python -m pytest -q` | No |
-| Frontend | `cd frontend && npm run typecheck && npm run build` | No |
+| Backend lint | `cd backend && ruff check app tests` | No |
+| Backend | `cd backend && .venv\Scripts\python -m pytest -q` (coverage gate ≥ 85 %) | No |
+| Frontend lint | `cd frontend && npm run lint` | No |
+| Frontend types/build | `cd frontend && npm run typecheck && npm run build` | No |
+| Frontend unit tests | `cd frontend && npm run coverage` (vitest, coverage gate) | No |
 | Browser UI | `npm run ui:smoke` (debug Chrome required) | No |
 | Device ingest | firmware + serial monitor, or the mock GPS client below | Yes, for the real thing |
 | Outdoor acceptance | [`hardware procedure`](#4-outdoor-hardware-test-procedure) | **Yes** |
@@ -107,12 +110,36 @@ The suite asserts the consistent error contract on every route group:
 
 ```powershell
 cd frontend
+npm run lint          # eslint (typescript-eslint + react-hooks + react-refresh)
 npm run typecheck     # tsc --noEmit, strict
+npm run test          # vitest unit tests (jsdom + testing-library)
+npm run coverage      # unit tests + v8 coverage, enforces the thresholds below
 npm run build         # production bundle -> dist/
 ```
 
-These catch type drift between the API responses and the UI (`src/types/index.ts` mirrors the
-Pydantic schemas) and Vite/Tailwind build problems.
+The type checks catch drift between the API responses and the UI
+(`src/types/index.ts` mirrors the Pydantic schemas); linting and the unit tests catch logic
+regressions before the browser.
+
+### Frontend unit tests (65 tests)
+
+Pure logic and the API layer are tested directly; presentational components are covered by the
+browser smoke test instead.
+
+| File | Tests | Proves |
+| --- | --- | --- |
+| `src/utils/geo.test.ts` | 17 | Haversine distance, bearing, drawability (rejects 0,0 / implausible), route segmentation on gaps and jumps, distance, bounds, direction arrows, timestamp shifting. |
+| `src/utils/format.test.ts` | 16 | Distance/duration/speed/coordinate/count formatting, relative time, status labels, invalid-input fallbacks. |
+| `src/services/api.test.ts` | 8 | Typed `fetch` client: JSON parsing, 204 handling, error-envelope → `ApiError`, network-error wrapping, query-string building, JSON request bodies. |
+| `src/hooks/useToasts.test.tsx` | 5 | Toast queue cap (4), manual and timed dismissal (info 4 s / error 9 s). |
+| `src/hooks/useDeviceStatus.test.tsx` | 2 | Polling load path and error path (mocked API). |
+| `src/hooks/useJourney.test.tsx` | 3 | Null-journey reset, detail + statistics load, polling failure. |
+| `src/hooks/useRecorder.test.tsx` | 9 | Start (adopt device journey / resume paused / create new), pause/resume/stop/save/clear/rename, 409 surfaced as "Command refused", no-journey guard. |
+| `src/hooks/useDemoReplay.test.tsx` | 4 | 60× replay streaming, auto-stop at the end, empty-route refusal, stream failure, re-entrancy guard. |
+
+Coverage is measured for `src/utils`, `src/hooks` and `src/services` (the logic layer). The gate
+in `vite.config.ts` requires statements ≥ 75 %, branches ≥ 70 %, functions ≥ 70 %, lines ≥ 75 %
+(currently ≈ 91 / 81 / 78 / 92 %).
 
 ## 3. Browser smoke test (no extra npm dependency)
 
@@ -182,8 +209,8 @@ Everything else is covered by the automated suites above.
 ## 5. Regression checklist before a demo
 
 ```powershell
-cd backend  ; .venv\Scripts\python -m pytest -q              # 108 passed
-cd ..\frontend ; npm run typecheck ; npm run build           # clean
+cd backend  ; ruff check app tests ; .venv\Scripts\python -m pytest -q   # lint clean; 108 passed, coverage ≥ 85%
+cd ..\frontend ; npm run lint ; npm run typecheck ; npm run coverage ; npm run build
 npm run ui:smoke                                             # all PASS
 ```
 
