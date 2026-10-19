@@ -4,19 +4,25 @@
 /* ---------------------------------------------------------------------------
  * Design tokens (Tailwind v4 @theme -> utilities like bg-surface, text-muted)
  * -------------------------------------------------------------------------*/
+/* GeoSketch light design system (see stitch_geosketch_light_dashboard/DESIGN.md) */
 @theme {
-  --color-abyss: #050914;
-  --color-surface: #0b1120;
-  --color-surface-2: #111a2e;
-  --color-edge: #1e293b;
-  --color-edge-soft: #16233a;
-  --color-muted: #8ea0bd;
-  --color-accent: #38bdf8;
-  --color-accent-soft: #0ea5e9;
-  --color-live: #22c55e;
-  --color-demo: #a78bfa;
-  --color-warn: #f59e0b;
-  --color-danger: #ef4444;
+  --color-abyss: #f6f8fc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f5fb;
+  --color-edge: #e4e9f2;
+  --color-edge-soft: #eef2f9;
+  --color-muted: #64748b;
+  --color-ink: #0f172a;
+  --color-body: #334155;
+  --color-accent: #2563eb;
+  --color-accent-soft: #3b82f6;
+  --color-primary-fixed: #dbeafe;
+  --color-secondary: #0f766e;
+  --color-tertiary: #9d2940;
+  --color-live: #16a34a;
+  --color-demo: #7c3aed;
+  --color-warn: #d97706;
+  --color-danger: #dc2626;
   --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Cascadia Mono', ui-monospace, monospace;
 }
@@ -30,10 +36,10 @@ body,
 body {
   margin: 0;
   background:
-    radial-gradient(1100px 620px at 12% -8%, rgba(56, 189, 248, 0.14), transparent 60%),
-    radial-gradient(900px 520px at 88% 0%, rgba(167, 139, 250, 0.12), transparent 62%),
+    radial-gradient(1100px 620px at 12% -8%, rgba(224, 242, 254, 0.85), transparent 60%),
+    radial-gradient(900px 520px at 88% 0%, rgba(204, 251, 241, 0.7), transparent 62%),
     var(--color-abyss);
-  color: #e6edf7;
+  color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
@@ -52,45 +58,46 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #22304a;
+  background: #cbd5e1;
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2f4260;
+  background: #94a3b8;
 }
 
 /* ---------------------------------------------------------------------------
- * Leaflet: dark theme adjustments (Leaflet ships a light UI by default)
+ * Leaflet: light theme adjustments
  * -------------------------------------------------------------------------*/
 .leaflet-container {
-  background: #070c18;
+  background: #eef4ff;
   font-family: var(--font-sans);
   outline: none;
 }
 .leaflet-control-attribution {
-  background: rgba(8, 13, 25, 0.78) !important;
-  color: #93a4c0 !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  color: #64748b !important;
   font-size: 10px;
 }
 .leaflet-control-attribution a {
-  color: #7dd3fc !important;
+  color: var(--color-accent) !important;
 }
 .leaflet-bar,
 .leaflet-touch .leaflet-bar {
   border: 1px solid var(--color-edge) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.1);
 }
 .leaflet-bar a,
 .leaflet-bar a:hover {
-  background: rgba(11, 17, 32, 0.94) !important;
-  color: #dbeafe !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: var(--color-body) !important;
   border-bottom-color: var(--color-edge) !important;
 }
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-  background: rgba(11, 17, 32, 0.97);
-  color: #e6edf7;
+  background: #ffffff;
+  color: var(--color-ink);
   border: 1px solid var(--color-edge);
+  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.12);
 }
 .leaflet-popup-content {
   margin: 10px 12px;
@@ -111,7 +118,7 @@ body {
 }
 .route-arrow svg {
   display: block;
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.35));
 }
 
 /* Live position marker. */
@@ -176,7 +183,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #101a2e 0%, #17233c 45%, #101a2e 100%);
+  background: linear-gradient(90deg, #eef2f9 0%, #e2e8f0 45%, #eef2f9 100%);
   background-size: 420px 100%;
   animation: shimmer 1.4s linear infinite;
 }

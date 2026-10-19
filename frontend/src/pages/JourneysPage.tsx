@@ -56,21 +56,21 @@ export default function JourneysPage({
       <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-edge bg-surface px-3.5 py-3">
           <p className="text-[10px] uppercase tracking-wider text-muted">Journeys</p>
-          <p className="mt-1 text-lg font-semibold text-slate-100 tabular">{journeys.length}</p>
+          <p className="mt-1 text-lg font-semibold text-ink tabular">{journeys.length}</p>
           <p className="text-[10px] text-muted">
             {totals.saved} saved · {totals.hardware} hardware · {totals.demo} demo
           </p>
         </div>
         <div className="rounded-xl border border-edge bg-surface px-3.5 py-3">
           <p className="text-[10px] uppercase tracking-wider text-muted">Total distance</p>
-          <p className="mt-1 text-lg font-semibold text-slate-100 tabular">
+          <p className="mt-1 text-lg font-semibold text-ink tabular">
             {formatDistance(totals.distance)}
           </p>
           <p className="text-[10px] text-muted">GPS estimate across all journeys</p>
         </div>
         <div className="rounded-xl border border-edge bg-surface px-3.5 py-3">
           <p className="text-[10px] uppercase tracking-wider text-muted">Recorded points</p>
-          <p className="mt-1 text-lg font-semibold text-slate-100 tabular">{totals.points}</p>
+          <p className="mt-1 text-lg font-semibold text-ink tabular">{totals.points}</p>
           <p className="text-[10px] text-muted">raw fixes stored (nothing overwritten)</p>
         </div>
         <div className="rounded-xl border border-edge bg-surface px-3.5 py-3">
@@ -97,14 +97,14 @@ export default function JourneysPage({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search titles…"
-            className="w-40 bg-transparent text-[12px] text-slate-100 outline-none placeholder:text-muted"
+            className="w-40 bg-transparent text-[12px] text-ink outline-none placeholder:text-muted"
           />
         </label>
 
         <select
           value={sourceFilter}
           onChange={(event) => setSourceFilter(event.target.value as typeof sourceFilter)}
-          className="rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[12px] text-slate-100 outline-none"
+          className="rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[12px] text-ink outline-none"
         >
           <option value="all">All sources</option>
           <option value="hardware">ESP32-C3 hardware</option>
@@ -114,7 +114,7 @@ export default function JourneysPage({
         <select
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-          className="rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[12px] text-slate-100 outline-none"
+          className="rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[12px] text-ink outline-none"
         >
           {STATUS_FILTERS.map((value) => (
             <option key={value} value={value}>
@@ -126,7 +126,7 @@ export default function JourneysPage({
         <button
           type="button"
           onClick={onRefresh}
-          className="ml-auto flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-slate-200 transition hover:border-accent/50"
+          className="ml-auto flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-body transition hover:border-accent/50"
         >
           <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
         </button>
@@ -135,7 +135,7 @@ export default function JourneysPage({
       {filtered.length === 0 && journeys.length > 0 ? (
         <div className="rounded-2xl border border-edge bg-surface p-6 text-center">
           <Route size={20} className="mx-auto text-muted" />
-          <p className="mt-2 text-sm text-slate-200">No journey matches these filters</p>
+          <p className="mt-2 text-sm text-body">No journey matches these filters</p>
         </div>
       ) : (
         <JourneyTable

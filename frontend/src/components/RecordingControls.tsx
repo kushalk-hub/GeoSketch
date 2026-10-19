@@ -37,11 +37,11 @@ function Button({
 }) {
   const tones = {
     default:
-      'border-edge bg-surface-2/80 text-slate-200 hover:border-accent/60 hover:text-white',
+      'border-edge bg-surface text-body hover:border-accent/50 hover:bg-surface-2 hover:text-ink',
     primary:
-      'border-accent/50 bg-accent/15 text-accent hover:bg-accent/25 hover:text-white',
-    danger: 'border-danger/40 bg-danger/10 text-danger hover:bg-danger/20',
-    success: 'border-live/40 bg-live/10 text-live hover:bg-live/20',
+      'border-accent bg-accent text-white shadow-sm hover:bg-accent/90',
+    danger: 'border-danger/25 bg-danger/10 text-danger hover:bg-danger/20',
+    success: 'border-live/25 bg-live/10 text-live hover:bg-live/20',
   } as const
 
   return (
@@ -82,7 +82,7 @@ export default function RecordingControls({
   return (
     <div className="rounded-2xl border border-edge bg-surface p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-100">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
           <CircleDot size={15} className={status === 'recording' ? 'text-danger' : 'text-muted'} />
           Journey recording
         </h3>
@@ -95,7 +95,7 @@ export default function RecordingControls({
                 : status === 'saved'
                   ? 'border-live/40 bg-live/10 text-live'
                   : status
-                    ? 'border-edge bg-surface-2 text-slate-300'
+                    ? 'border-edge bg-surface-2 text-body'
                     : 'border-edge bg-surface-2 text-muted'
           }`}
         >

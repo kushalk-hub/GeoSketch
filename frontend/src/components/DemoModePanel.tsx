@@ -80,7 +80,7 @@ export default function DemoModePanel({
               }`}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[12px] font-semibold text-slate-100">{route.name}</span>
+                <span className="text-[12px] font-semibold text-ink">{route.name}</span>
                 <span className="shrink-0 text-[10px] text-muted tabular">
                   {formatDistance(route.distance_m)} · {formatDuration(route.duration_seconds)}
                 </span>
@@ -116,7 +116,7 @@ export default function DemoModePanel({
             type="button"
             onClick={onReplay}
             disabled={!selectedRouteId || importing}
-            className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/80 px-3 py-2 text-[12px] font-medium text-slate-200 transition hover:border-accent/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-lg border border-tertiary bg-tertiary px-3 py-2 text-[12px] font-medium text-white shadow-sm transition hover:bg-tertiary/90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Play size={14} /> Replay on the map
           </button>

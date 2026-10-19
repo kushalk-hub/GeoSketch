@@ -10,7 +10,7 @@ interface Props {
 }
 
 const TONES: Record<NonNullable<Props['tone']>, string> = {
-  default: 'text-slate-100',
+  default: 'text-ink',
   live: 'text-live',
   demo: 'text-demo',
   warn: 'text-warn',
@@ -26,7 +26,7 @@ export default function StatTile({
   mono = false,
 }: Props) {
   return (
-    <div className="rounded-xl border border-edge bg-surface-2/60 px-3.5 py-3 transition hover:border-accent/40">
+    <div className="rounded-xl border border-edge bg-surface px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:border-accent/40">
       {/* Labels wrap instead of being ellipsised: a clipped "Total dista…" tile
           is worse than a two line label. */}
       <div className="flex items-start gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">

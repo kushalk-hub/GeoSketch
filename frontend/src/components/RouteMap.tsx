@@ -20,8 +20,8 @@ const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 const TILE_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 
-const ROUTE_COLOR = '#38bdf8'
-const ROUTE_GLOW = '#0ea5e9'
+const ROUTE_COLOR = '#2563eb'
+const ROUTE_GLOW = '#93c5fd'
 
 interface Props {
   points: GPSPoint[]
@@ -226,7 +226,7 @@ export default function RouteMap({
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
             <Compass size={13} className="text-accent" /> Route legend
           </div>
-          <ul className="mt-1.5 space-y-1 text-[11px] text-slate-300">
+          <ul className="mt-1.5 space-y-1 text-[11px] text-body">
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-6 rounded-full bg-accent" /> recorded track
             </li>
@@ -237,7 +237,7 @@ export default function RouteMap({
               <span className="h-2.5 w-2.5 rounded-full border border-white bg-danger" /> end
             </li>
             <li className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full border border-white bg-slate-500" /> last known
+              <span className="h-2.5 w-2.5 rounded-full border border-white bg-slate-400" /> last known
             </li>
           </ul>
           <p className="mt-1.5 max-w-[190px] text-[10px] leading-tight text-muted">
@@ -250,7 +250,7 @@ export default function RouteMap({
         <button
           type="button"
           onClick={() => setFitSignal((value) => value + 1)}
-          className="pointer-events-auto flex items-center gap-1.5 rounded-lg border border-edge bg-surface/85 px-2.5 py-1.5 text-[11px] font-medium text-slate-200 backdrop-blur transition hover:border-accent/60 hover:text-white"
+          className="pointer-events-auto flex items-center gap-1.5 rounded-lg border border-edge bg-surface/85 px-2.5 py-1.5 text-[11px] font-medium text-body backdrop-blur transition hover:border-accent/60 hover:text-ink"
         >
           <Crosshair size={13} /> Fit route
         </button>
@@ -259,7 +259,7 @@ export default function RouteMap({
       {points.length === 0 && (
         <div className="pointer-events-none absolute inset-0 z-[400] flex items-center justify-center">
           <div className="rounded-xl border border-edge bg-surface/80 px-4 py-3 text-center backdrop-blur">
-            <p className="text-sm font-medium text-slate-200">No GPS points yet</p>
+            <p className="text-sm font-medium text-body">No GPS points yet</p>
             <p className="mt-1 max-w-xs text-xs text-muted">
               Start recording and carry the ESP32-C3 outdoors, or load a DEMO MODE sample route.
             </p>

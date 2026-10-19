@@ -34,32 +34,30 @@ export default function AppShell({
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="sticky top-0 z-[1000] border-b border-edge bg-abyss/85 backdrop-blur">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-3 px-4 py-3">
+      <header className="sticky top-0 z-[1000] border-b border-edge bg-surface/85 shadow-[0_1px_8px_rgba(15,23,42,0.04)] backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-3 px-4 py-3 md:px-8">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl border border-accent/40 bg-accent/15">
+            <span className="grid h-9 w-9 place-items-center rounded-xl border border-accent/20 bg-primary-fixed">
               <Activity size={18} className="text-accent" />
             </span>
             <div className="leading-tight">
-              <h1 className="text-[15px] font-semibold tracking-tight text-slate-50">
-                GeoSketch
-              </h1>
+              <h1 className="text-[15px] font-semibold tracking-tight text-ink">GeoSketch</h1>
               <p className="text-[10px] uppercase tracking-[0.18em] text-muted">
                 ESP32-C3 · NEO-6M · GPS route art
               </p>
             </div>
           </div>
 
-          <nav className="order-3 flex w-full gap-1 rounded-xl border border-edge bg-surface/70 p-1 sm:order-none sm:w-auto">
+          <nav className="order-3 flex w-full gap-1 rounded-full border border-edge bg-surface-2 p-1.5 sm:order-none sm:w-auto">
             {TABS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => onTabChange(id)}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium transition sm:flex-none ${
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-medium transition sm:flex-none ${
                   tab === id
-                    ? 'bg-accent/18 text-accent'
-                    : 'text-muted hover:bg-surface-2 hover:text-slate-200'
+                    ? 'bg-surface font-semibold text-accent shadow-sm ring-1 ring-edge'
+                    : 'text-muted hover:text-ink'
                 }`}
               >
                 <Icon size={14} />
@@ -70,7 +68,7 @@ export default function AppShell({
 
           <div className="ml-auto flex items-center gap-2">
             {demoActive ? (
-              <span className="rounded-full border border-demo/40 bg-demo/10 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-demo">
+              <span className="rounded-full border border-demo/25 bg-demo/10 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-demo">
                 DEMO DATA
               </span>
             ) : null}
@@ -78,9 +76,9 @@ export default function AppShell({
             <span
               className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
                 !backendOnline
-                  ? 'border-danger/40 bg-danger/10 text-danger'
+                  ? 'border-danger/25 bg-danger/10 text-danger'
                   : isLive
-                    ? 'border-live/40 bg-live/10 text-live'
+                    ? 'border-live/25 bg-live/10 text-live'
                     : 'border-edge bg-surface-2 text-muted'
               }`}
               title={
@@ -102,10 +100,10 @@ export default function AppShell({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-4">{children}</main>
+      <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-5 md:px-8">{children}</main>
 
-      <footer className="mx-auto w-full max-w-[1600px] px-4 pb-5 pt-2">
-        <p className="text-[10px] leading-relaxed text-muted">
+      <footer className="mx-auto w-full max-w-[1600px] px-4 pb-6 pt-2 md:px-8">
+        <p className="text-center text-[10px] leading-relaxed text-muted">
           GeoSketch · real GPS hardware (ESP32-C3 + NEO-6M) → Wi-Fi → FastAPI/SQLite → route
           artwork. Distances, speeds and durations are GPS estimates. Demo sample routes are
           simulated and always labelled as such.

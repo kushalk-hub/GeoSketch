@@ -95,7 +95,7 @@ export default function DashboardPage({
                   onChange={(event) => setTitleDraft(event.target.value)}
                   maxLength={160}
                   autoFocus
-                  className="min-w-0 flex-1 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none focus:border-accent/60"
+                  className="min-w-0 flex-1 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent/60"
                 />
                 <button
                   type="button"
@@ -120,7 +120,7 @@ export default function DashboardPage({
             ) : (
               <>
                 <div className="min-w-0">
-                  <h2 className="truncate text-[15px] font-semibold text-slate-50">
+                  <h2 className="truncate text-[15px] font-semibold text-ink">
                     {journey ? journey.title : 'No journey open'}
                   </h2>
                   <p className="text-[11px] text-muted">
@@ -161,7 +161,7 @@ export default function DashboardPage({
                     <button
                       type="button"
                       onClick={startEditing}
-                      className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-slate-200 transition hover:border-accent/50"
+                      className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-body transition hover:border-accent/50"
                     >
                       <Pencil size={12} /> Rename
                     </button>
@@ -170,7 +170,7 @@ export default function DashboardPage({
                   <button
                     type="button"
                     onClick={onRefresh}
-                    className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-slate-200 transition hover:border-accent/50"
+                    className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-body transition hover:border-accent/50"
                   >
                     <RefreshCw size={12} /> Refresh
                   </button>
@@ -189,7 +189,7 @@ export default function DashboardPage({
               heightClass="h-[440px] xl:h-[560px]"
               showRejected={showRejected}
             />
-            <label className="absolute right-3 top-3 z-[500] flex items-center gap-1.5 rounded-lg border border-edge bg-surface/85 px-2.5 py-1.5 text-[11px] text-slate-200 backdrop-blur">
+            <label className="absolute right-3 top-3 z-[500] flex items-center gap-1.5 rounded-lg border border-edge bg-surface/85 px-2.5 py-1.5 text-[11px] text-body backdrop-blur">
               <input
                 type="checkbox"
                 checked={showRejected}
@@ -218,7 +218,7 @@ export default function DashboardPage({
           <StatusPanel status={status} journey={journey} statistics={statistics} />
 
           <div className="rounded-2xl border border-edge bg-surface p-4">
-            <h3 className="text-sm font-semibold text-slate-100">Point stream</h3>
+            <h3 className="text-sm font-semibold text-ink">Point stream</h3>
             <ul className="mt-2 max-h-[220px] space-y-1.5 overflow-y-auto pr-1">
               {points.length === 0 ? (
                 <li className="text-[11px] text-muted">
@@ -233,7 +233,7 @@ export default function DashboardPage({
                       key={point.id}
                       className="flex items-center justify-between gap-2 rounded-lg border border-edge-soft bg-surface-2/40 px-2.5 py-1.5 text-[11px]"
                     >
-                      <span className="tabular text-slate-300">
+                      <span className="tabular text-body">
                         #{point.sequence} {point.latitude.toFixed(5)}, {point.longitude.toFixed(5)}
                       </span>
                       <span className="shrink-0 text-[10px] text-muted">

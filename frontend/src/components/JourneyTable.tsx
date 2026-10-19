@@ -19,7 +19,7 @@ function statusTone(status: string): string {
     case 'saved':
       return 'border-live/40 bg-live/10 text-live'
     default:
-      return 'border-edge bg-surface-2 text-slate-300'
+      return 'border-edge bg-surface-2 text-body'
   }
 }
 
@@ -28,7 +28,7 @@ export default function JourneyTable({ journeys, activeJourneyId, onOpen, onOpen
     return (
       <div className="rounded-2xl border border-edge bg-surface p-6 text-center">
         <Route size={22} className="mx-auto text-muted" />
-        <p className="mt-2 text-sm font-medium text-slate-200">No journeys yet</p>
+        <p className="mt-2 text-sm font-medium text-body">No journeys yet</p>
         <p className="mt-1 text-xs text-muted">
           Start a recording on the dashboard, or import a DEMO MODE sample route.
         </p>
@@ -40,7 +40,7 @@ export default function JourneyTable({ journeys, activeJourneyId, onOpen, onOpen
     <div className="overflow-hidden rounded-2xl border border-edge bg-surface">
       <table className="w-full border-collapse text-left text-[12px]">
         <thead>
-          <tr className="border-b border-edge text-[10px] uppercase tracking-wider text-muted">
+          <tr className="border-b border-edge bg-surface-2/70 text-[10px] uppercase tracking-wider text-muted">
             <th className="px-3 py-2.5 font-semibold">Journey</th>
             <th className="hidden px-3 py-2.5 font-semibold sm:table-cell">Source</th>
             <th className="px-3 py-2.5 font-semibold">Distance</th>
@@ -62,12 +62,12 @@ export default function JourneyTable({ journeys, activeJourneyId, onOpen, onOpen
               <tr
                 key={journey.id}
                 className={`border-b border-edge-soft last:border-0 transition ${
-                  isActive ? 'bg-accent/8' : 'hover:bg-surface-2/50'
+                  isActive ? 'bg-primary-fixed/55' : 'hover:bg-surface-2/60'
                 }`}
               >
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-slate-100">{journey.title}</span>
+                    <span className="font-medium text-ink">{journey.title}</span>
                     {isActive ? (
                       <span className="rounded border border-accent/40 bg-accent/12 px-1.5 py-0.5 text-[9px] text-accent">
                         OPEN
@@ -104,16 +104,16 @@ export default function JourneyTable({ journeys, activeJourneyId, onOpen, onOpen
                     <span className="text-[10px] text-live">ESP32-C3</span>
                   )}
                 </td>
-                <td className="px-3 py-2.5 text-slate-200 tabular">
+                <td className="px-3 py-2.5 text-body tabular">
                   {formatDistance(journey.total_distance_m)}
                 </td>
-                <td className="hidden px-3 py-2.5 text-slate-200 tabular md:table-cell">
+                <td className="hidden px-3 py-2.5 text-body tabular md:table-cell">
                   {formatDuration(journey.duration_seconds)}
                 </td>
-                <td className="hidden px-3 py-2.5 text-slate-200 tabular md:table-cell">
+                <td className="hidden px-3 py-2.5 text-body tabular md:table-cell">
                   {averageSpeed === null ? formatSpeed(null) : formatSpeed(averageSpeed)}
                 </td>
-                <td className="hidden px-3 py-2.5 text-slate-200 tabular lg:table-cell">
+                <td className="hidden px-3 py-2.5 text-body tabular lg:table-cell">
                   {journey.point_count}
                 </td>
                 <td className="hidden px-3 py-2.5 text-[11px] text-muted lg:table-cell">
@@ -124,7 +124,7 @@ export default function JourneyTable({ journeys, activeJourneyId, onOpen, onOpen
                     <button
                       type="button"
                       onClick={() => onOpen(journey)}
-                      className="rounded-md border border-edge px-2 py-1 text-[11px] text-slate-200 transition hover:border-accent/50 hover:text-white"
+                      className="rounded-md border border-edge px-2 py-1 text-[11px] text-body transition hover:border-accent/50 hover:text-ink"
                     >
                       Open
                     </button>
@@ -132,7 +132,7 @@ export default function JourneyTable({ journeys, activeJourneyId, onOpen, onOpen
                       type="button"
                       onClick={() => onOpenStudio(journey)}
                       disabled={journey.point_count === 0}
-                      className="rounded-md border border-edge px-2 py-1 text-[11px] text-slate-200 transition hover:border-accent/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                      className="rounded-md border border-edge px-2 py-1 text-[11px] text-body transition hover:border-accent/50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       Studio
                     </button>

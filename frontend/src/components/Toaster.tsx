@@ -35,7 +35,7 @@ export default function Toaster({ toasts, onDismiss }: Props) {
           >
             <Icon size={16} className={`mt-0.5 shrink-0 ${style.text}`} />
             <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-semibold text-slate-100">{toast.message}</p>
+              <p className="text-[13px] font-semibold text-ink">{toast.message}</p>
               {toast.detail ? (
                 <p className="mt-0.5 break-words text-[11px] leading-snug text-muted">
                   {toast.detail}
@@ -45,7 +45,7 @@ export default function Toaster({ toasts, onDismiss }: Props) {
             <button
               type="button"
               onClick={() => onDismiss(toast.id)}
-              className="rounded p-0.5 text-muted transition hover:text-slate-200"
+              className="rounded p-0.5 text-muted transition hover:text-body"
               aria-label="Dismiss notification"
             >
               <X size={14} />

@@ -44,7 +44,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
       <div
         className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 ${
           isLive
-            ? 'border-live/40 bg-live/10'
+            ? 'border-live/25 bg-live/10'
             : 'border-edge bg-surface-2/60'
         }`}
       >
@@ -52,7 +52,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
           {isLive ? <Wifi size={18} className="text-live" /> : <WifiOff size={18} className="text-muted" />}
         </span>
         <div className="min-w-0">
-          <p className={`text-sm font-semibold ${isLive ? 'text-live' : 'text-slate-200'}`}>
+          <p className={`text-sm font-semibold ${isLive ? 'text-live' : 'text-body'}`}>
             {isLive ? 'ESP32-C3 connected — live GPS data' : 'Tracker not reporting'}
           </p>
           <p className="mt-0.5 text-[11px] leading-snug text-muted">

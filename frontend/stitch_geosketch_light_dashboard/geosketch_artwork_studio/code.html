@@ -1,0 +1,719 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "surface-container-lowest": "#ffffff",
+        "secondary-container": "#6df5e1",
+        "surface-bright": "#f8f9ff",
+        "on-error": "#ffffff",
+        "inverse-surface": "#213145",
+        "on-secondary-fixed": "#00201c",
+        "on-secondary-container": "#006f64",
+        "surface-container-highest": "#d3e4fe",
+        "error-container": "#ffdad6",
+        "tertiary-fixed": "#ffdadc",
+        "on-primary-container": "#eeefff",
+        "on-primary": "#ffffff",
+        "tertiary-fixed-dim": "#ffb2b9",
+        "error": "#ba1a1a",
+        "surface-container-high": "#dce9ff",
+        "on-error-container": "#93000a",
+        "surface": "#f8f9ff",
+        "on-secondary": "#ffffff",
+        "on-surface": "#0b1c30",
+        "outline-variant": "#c3c6d7",
+        "tertiary-container": "#bd4257",
+        "on-secondary-fixed-variant": "#005048",
+        "on-tertiary-fixed": "#400010",
+        "tertiary": "#9d2940",
+        "primary": "#004ac6",
+        "on-tertiary": "#ffffff",
+        "outline": "#737686",
+        "background": "#f8f9ff",
+        "surface-container-low": "#eff4ff",
+        "on-primary-fixed": "#00174b",
+        "secondary": "#006b5f",
+        "secondary-fixed-dim": "#4fdbc8",
+        "on-tertiary-container": "#ffeded",
+        "primary-fixed-dim": "#b4c5ff",
+        "surface-variant": "#d3e4fe",
+        "on-tertiary-fixed-variant": "#891933",
+        "surface-tint": "#0053db",
+        "on-primary-fixed-variant": "#003ea8",
+        "surface-dim": "#cbdbf5",
+        "on-background": "#0b1c30",
+        "on-surface-variant": "#434655",
+        "primary-container": "#2563eb",
+        "surface-container": "#e5eeff",
+        "primary-fixed": "#dbe1ff",
+        "inverse-on-surface": "#eaf1ff",
+        "secondary-fixed": "#71f8e4",
+        "inverse-primary": "#b4c5ff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "gutter-desktop": "1.5rem",
+        "margin": "1rem",
+        "gutter": "1.25rem",
+        "space-md": "1rem",
+        "margin-tablet": "1.5rem",
+        "space-xl": "2.5rem",
+        "space-xs": "0.25rem",
+        "margin-desktop": "2rem",
+        "space-sm": "0.5rem",
+        "space-lg": "1.5rem"
+      },
+      "fontFamily": {
+        "telemetry-hero-mobile": ["JetBrains Mono"],
+        "body-lg": ["Inter"],
+        "headline-md": ["Inter"],
+        "telemetry-hero": ["JetBrains Mono"],
+        "body-sm": ["Inter"],
+        "body-md": ["Inter"],
+        "headline-lg": ["Inter"],
+        "label-caps": ["Inter"],
+        "headline-sm": ["Inter"],
+        "display-hero-mobile": ["Inter"],
+        "telemetry-sm": ["JetBrains Mono"],
+        "telemetry-md": ["JetBrains Mono"],
+        "display-hero": ["Inter"]
+      },
+      "fontSize": {
+        "telemetry-hero-mobile": ["26px", {"lineHeight": "30px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+        "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+        "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+        "telemetry-hero": ["36px", {"lineHeight": "40px", "letterSpacing": "-0.04em", "fontWeight": "600"}],
+        "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+        "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+        "label-caps": ["11px", {"lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600"}],
+        "headline-sm": ["17px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "display-hero-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+        "telemetry-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "500"}],
+        "telemetry-md": ["15px", {"lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+        "display-hero": ["44px", {"lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "700"}]
+      }
+    }
+  }
+}</script></head><body class="bg-background font-body-md text-on-surface antialiased relative min-h-screen"><div class="pointer-events-none fixed inset-0 z-0 overflow-hidden"><div class="absolute -top-40 left-1/4 h-96 w-96 rounded-full bg-primary-fixed-dim/20 blur-3xl"></div><div class="absolute -top-40 right-1/4 h-96 w-96 rounded-full bg-secondary-fixed-dim/25 blur-3xl"></div></div><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-md border-b border-[#E4E9F2] shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-20 max-w-[1600px] mx-auto px-margin md:px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-[280px]"><img alt="GeoSketch Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Un14oQx8X3mN8xvrGfZwMhA2KnHn3xdhcTA7vxYIK3LYwzSpfe2jKSGE70BL5yRZa23aDeAMTaSFzbv-TSxnS0HulRz_YgydtqB1bWy5K8J2t7tZGoOGDg8xNkE69G58Ocr1DkHek82sMM_F9X9Nw05839wDtZj7rV80bT32NbGG282HkK7utT3lhCVZQFQir0uqXawGEaNfqHvwqEYGuc_PfpJ-mrdm6pRnG314_DAfrEY9sxP_OehRMK"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight">GeoSketch</span><span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">ESP32-C3 · NEO-6M · GPS ROUTE ART</span></div></div><nav class="hidden lg:flex items-center gap-space-xs p-1.5 bg-[#F1F5FB] rounded-full border border-[#E4E9F2]" data-active-classes="bg-[#DBEAFE] text-primary-container font-semibold rounded-full shadow-sm"><a class="font-body-md text-body-md px-space-md py-space-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="dashboard" href="#">Dashboard</a><a class="font-body-md text-body-md px-space-md py-space-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="journeys" href="#">Journeys</a><a class="font-body-md text-body-md px-space-md py-space-sm bg-[#DBEAFE] text-primary-container font-semibold rounded-full shadow-sm transition-colors" data-path="artwork-studio" href="#">Artwork Studio</a></nav><div class="flex items-center gap-space-sm"><div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EDE9FE] border border-[#DDD6FE] text-[#7C3AED] font-label-caps text-label-caps font-semibold tracking-wide"><span class="material-symbols-outlined text-[13px]">diamond</span><span class="">DEMO DATA</span></div><div class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#DCFCE7] border border-[#BBF7D0] text-[#16A34A] font-telemetry-sm text-telemetry-sm"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#16A34A] opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-[#16A34A]"></span></span><span class="font-medium leading-none">live · esp32c3-01</span></div><div class="w-9 h-9 rounded-full bg-surface-container border border-[#E4E9F2] text-on-surface flex items-center justify-center shrink-0 ml-1 shadow-sm hover:bg-surface-container-high transition-colors cursor-pointer"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">person</span></div></div></div></header><main class="relative z-10 w-full pt-20 bg-transparent min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<div class="max-w-[1600px] w-full mx-auto px-margin md:px-margin-desktop py-space-lg flex flex-col gap-space-lg">
+<!-- STUDIO TOP BAR / BANNER -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[26px]">palette</span>
+<h1 class="font-headline-md text-headline-md text-on-surface">Artwork Studio</h1>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-caps text-label-caps uppercase">v2.4 Engine</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Five algorithmic styles rendered directly from raw GPS telemetry — vector SVG &amp; raster PNG exports.</p>
+</div>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs lg:pt-0">
+<!-- Journey Selector Dropdown -->
+<div class="relative group">
+<button class="flex items-center gap-space-sm bg-surface-container-low hover:bg-surface-container text-on-surface px-space-md py-2 rounded-xl transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">route</span>
+<div class="flex flex-col text-left">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ACTIVE JOURNEY</span>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-[13px] text-on-surface font-semibold truncate max-w-[210px]">Riverfront Walk (with GPS outage) · #12</span>
+<span class="px-1.5 py-0.2 rounded bg-tertiary-fixed-dim/30 text-tertiary font-label-caps text-[9px] font-bold">DEMO</span>
+</div>
+</div>
+<span class="font-telemetry-sm text-telemetry-sm text-on-surface-variant ml-1">2.06km</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant ml-0.5">expand_more</span>
+</button>
+</div>
+<!-- Auto-Refresh Toggle -->
+<label class="flex items-center gap-space-sm bg-surface-container-low px-3.5 py-2 rounded-xl cursor-pointer hover:bg-surface-container transition-colors select-none">
+<input checked="" class="sr-only peer" id="auto-refresh-toggle" type="checkbox">
+<div class="w-8 h-4.5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-primary-container relative"></div>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Auto-refresh preview</span>
+</label>
+</div>
+</section>
+<!-- MAIN TWO-COLUMN STUDIO WORKBENCH -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Canvas + Render Telemetry + Saved Artworks (lg:col-span-8) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg min-w-0">
+<!-- 1. Primary Artwork Preview Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<!-- Card Header Row -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-xs">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Riverfront Walk (with GPS outage)</h2>
+<div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container/30 text-on-secondary-container font-telemetry-sm text-telemetry-sm">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="">vector rendered</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2 mt-0.5">
+<span class="">Minimal Style</span>
+<span class="">•</span>
+<span class="font-telemetry-sm text-telemetry-sm">232 raw coordinates</span>
+<span class="">•</span>
+<span class="font-telemetry-sm text-telemetry-sm">18.5204° N, 73.8567° E</span>
+</p>
+</div>
+<!-- Header Action Controls -->
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-body-md text-body-md font-medium" onclick="this.classList.add('animate-spin'); setTimeout(() =&gt; this.classList.remove('animate-spin'), 600);" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span class="">Refresh</span>
+</button>
+<button class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary transition-all font-body-md text-body-md font-semibold shadow-sm active:scale-95" type="button">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span class="">Generate &amp; Store</span>
+</button>
+</div>
+</div>
+<!-- Large High-Precision Artwork Canvas Frame (Paper White Minimal Art Presentation) -->
+<div class="relative w-full h-[530px] rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] p-3 md:p-4 shadow-[0_4px_24px_rgba(15,23,42,0.06)] overflow-hidden flex items-center justify-center group">
+  <!-- Inner Exhibition Passepartout / Paper Frame -->
+  <div class="relative w-full h-full rounded-xl bg-white border border-[#E2E8F0]/80 shadow-[inset_0_1px_4px_rgba(0,0,0,0.03)] overflow-hidden flex items-center justify-center">
+    <!-- Subtle Cartographic Grid Pattern Backdrop -->
+    <div class="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
+    
+    <!-- Floating Navigation Controls Pill (Top-Right) -->
+    <div class="absolute top-4 right-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-md rounded-xl p-1 border border-[#E2E8F0] shadow-sm">
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Zoom In" type="button">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+      </button>
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Zoom Out" type="button">
+        <span class="material-symbols-outlined text-[18px]">remove</span>
+      </button>
+      <div class="w-px h-4 bg-outline-variant/40 mx-0.5"></div>
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Reset Camera" type="button">
+        <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+      </button>
+      <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Fullscreen Preview" type="button">
+        <span class="material-symbols-outlined text-[18px]">fullscreen</span>
+      </button>
+    </div>
+    
+    <!-- Floating Scale Gauge Indicator (Top-Left) -->
+    <div class="absolute top-4 left-4 z-20 flex items-center gap-2.5 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-[#E2E8F0] shadow-sm">
+      <span class="material-symbols-outlined text-[16px] text-primary">square_foot</span>
+      <span class="font-telemetry-sm text-[11px] font-semibold tracking-wider text-on-surface">SCALE 1:15,000</span>
+      <div class="w-10 h-1.5 bg-surface-container rounded-full overflow-hidden flex items-center">
+        <span class="w-5 h-full bg-primary rounded-full"></span>
+      </div>
+    </div>
+    
+    <!-- GPS Trace Artwork Vector Engine -->
+    <svg class="w-full h-full p-8 relative z-10 transition-transform duration-300 drop-shadow-[0_2px_8px_rgba(37,99,235,0.08)]" fill="none" id="artwork-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient gradientUnits="userSpaceOnUse" id="route-gradient" x1="120" x2="780" y1="440" y2="160">
+          <stop offset="0%" stop-color="#2563EB"></stop>
+          <stop offset="45%" stop-color="#006B5F"></stop>
+          <stop offset="85%" stop-color="#FB7185"></stop>
+          <stop offset="100%" stop-color="#9D2940"></stop>
+        </linearGradient>
+        <filter height="140%" id="vector-glow" width="140%" x="-20%" y="-20%">
+          <feGaussianBlur result="glow" stdDeviation="4"></feGaussianBlur>
+          <feComposite in="SourceGraphic" in2="glow" operator="over"></feComposite>
+        </filter>
+      </defs>
+      <!-- Subtle Background Terrain Contours (Vector river line & reference paths) -->
+      <path d="M 60,510 C 220,490 320,380 440,360 C 560,340 680,210 840,190" opacity="0.45" stroke="#E2E8F0" stroke-linecap="round" stroke-linejoin="round" stroke-width="28"></path>
+      <path d="M 80,480 C 240,460 330,360 450,340 C 570,320 670,190 820,170" opacity="0.6" stroke="#CBD5E1" stroke-dasharray="4 6" stroke-width="1.5"></path>
+      <!-- Segment 1: Main Riverfront Walk Vector Curve -->
+      <path d="M 140,430 C 190,410 240,360 290,365 C 335,370 380,420 430,405 C 470,390 490,320 530,290" fill="none" filter="url(#vector-glow)" stroke="url(#route-gradient)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.5"></path>
+      <!-- GPS Outage Representation: Gap Split with Dashed Telemetry Interpolation -->
+      <path d="M 530,290 C 555,270 575,250 600,230" fill="none" opacity="0.9" stroke="#F59E0B" stroke-dasharray="6 6" stroke-linecap="round" stroke-width="2.5"></path>
+      <!-- Segment 2: Terminal Section Post Outage Restoration -->
+      <path d="M 600,230 C 630,210 670,180 720,185 C 755,190 770,165 790,150" fill="none" filter="url(#vector-glow)" stroke="url(#route-gradient)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5.5"></path>
+      <!-- Outage Gap Annotation Pill Pin -->
+      <g transform="translate(565, 260)">
+        <rect fill="#FEF3C7" height="22" rx="11" stroke="#F59E0B" stroke-width="1" width="88" x="-44" y="-14"></rect>
+        <text fill="#B45309" font-family="JetBrains Mono" font-size="10" font-weight="600" text-anchor="middle" x="0" y="2">GAP SPLIT · 38s</text>
+      </g>
+      <!-- START MARKER: Green Target Circle with White Ring -->
+      <g transform="translate(140, 430)">
+        <circle fill="#16A34A" opacity="0.2" r="14"></circle>
+        <circle fill="#16A34A" r="7" stroke="#FFFFFF" stroke-width="2.5"></circle>
+        <circle fill="#FFFFFF" r="2.5"></circle>
+        <text fill="#16A34A" font-family="JetBrains Mono" font-size="10" font-weight="600" text-anchor="middle" x="0" y="26">START</text>
+      </g>
+      <!-- END MARKER: Coral Target Circle with White Ring -->
+      <g transform="translate(790, 150)">
+        <circle fill="#FB7185" opacity="0.25" r="14"></circle>
+        <circle fill="#FB7185" r="7" stroke="#FFFFFF" stroke-width="2.5"></circle>
+        <circle fill="#FFFFFF" r="2.5"></circle>
+        <text fill="#9D2940" font-family="JetBrains Mono" font-size="10" font-weight="600" text-anchor="middle" x="0" y="-14">FINISH</text>
+      </g>
+      <!-- GPS Waypoint Node Dots along the curves -->
+      <circle cx="215" cy="380" fill="#004AC6" r="2.5"></circle>
+      <circle cx="290" cy="365" fill="#004AC6" r="2.5"></circle>
+      <circle cx="360" cy="395" fill="#004AC6" r="2.5"></circle>
+      <circle cx="430" cy="405" fill="#006B5F" r="2.5"></circle>
+      <circle cx="490" cy="320" fill="#006B5F" r="2.5"></circle>
+      <circle cx="660" cy="190" fill="#FB7185" r="2.5"></circle>
+      <circle cx="720" cy="185" fill="#9D2940" r="2.5"></circle>
+    </svg>
+    
+    <!-- Bottom-Right Watermark Caption (Swiss Poster Typographic Accent) -->
+    <div class="absolute bottom-5 right-6 z-20 flex flex-col items-end pointer-events-none select-none bg-white/80 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-[#E2E8F0]/60">
+      <span class="font-headline-sm text-[12px] font-bold text-on-surface tracking-wider">GEOSKETCH / PUNE RIVERFRONT</span>
+      <span class="font-telemetry-sm text-[11px] text-on-surface-variant tracking-widest uppercase">2.06 KM · 24 MIN · EPSG:3857</span>
+    </div>
+    
+    <!-- Bottom-Left Live Rendering Debounce Pill -->
+    <div class="absolute bottom-5 left-6 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#E2E8F0] shadow-sm">
+      <span class="h-2 w-2 rounded-full bg-primary-container animate-pulse"></span>
+      <span class="font-telemetry-sm text-[11px] text-on-surface font-medium">rendered in 320ms · smooth catmull-rom</span>
+    </div>
+  </div>
+</div>
+<!-- Info Strip Under Preview Canvas -->
+<div class="flex items-center gap-2 py-1 px-1">
+<span class="material-symbols-outlined text-outline text-[16px]">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Raw GPS points are stored untouched; only the canvas version is filtered, smoothed, and projected.</p>
+</div>
+<!-- Two Info Box Cards in a 2-Column Grid Under Preview -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+  <!-- Box 1: Coordinate Processing Telemetry -->
+  <div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm border border-[#E2E8F0] hover:border-primary/30 transition-all shadow-sm">
+    <div class="flex items-center justify-between pb-1 border-b border-[#E2E8F0]">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-primary"></span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">COORDINATE PROCESSING</span>
+      </div>
+      <span class="material-symbols-outlined text-primary text-[18px]">polyline</span>
+    </div>
+    <div class="grid grid-cols-2 gap-y-2.5 gap-x-space-md pt-1">
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Source fixes:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">232</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Drawn points:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-primary">212</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Redundant pruned:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">14</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Rejected/Noise:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-error">6</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Gaps split:</span>
+        <div class="flex items-center gap-1.5">
+          <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+          <span class="font-telemetry-sm text-[12px] font-semibold text-amber-700">1 (outage)</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Active segments:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">2</span>
+      </div>
+    </div>
+  </div>
+  <!-- Box 2: Canvas & Render Specs -->
+  <div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-sm border border-[#E2E8F0] hover:border-secondary/30 transition-all shadow-sm">
+    <div class="flex items-center justify-between pb-1 border-b border-[#E2E8F0]">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">CANVAS &amp; RENDER SPECS</span>
+      </div>
+      <span class="material-symbols-outlined text-secondary text-[18px]">aspect_ratio</span>
+    </div>
+    <div class="grid grid-cols-2 gap-y-2.5 gap-x-space-md pt-1">
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Canvas dimensions:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">2400 × 1600 px</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Aspect ratio:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">3:2 (Poster)</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">GIS Projection:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">Mercator (EPSG:3857)</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Drawn length:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">2.06 km</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Duration:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-on-surface">24m 20s</span>
+      </div>
+      <div class="flex items-center justify-between p-1.5 rounded-lg bg-surface-container-lowest/80 border border-[#E2E8F0]/60">
+        <span class="font-body-sm text-[12px] text-on-surface-variant">Raster Export:</span>
+        <span class="font-telemetry-sm text-[12px] font-semibold text-primary">300 DPI Vector</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- 2. 'Saved Artworks (3)' Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">collections_bookmark</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Saved Artworks <span class="text-on-surface-variant font-normal font-telemetry-sm text-[14px]">(3)</span></h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Filter:</span>
+<select class="bg-surface-container text-on-surface font-body-sm text-body-sm px-3 py-1.5 rounded-xl border-none focus:ring-2 focus:ring-primary-container outline-none cursor-pointer">
+<option>All Journeys</option>
+<option selected="">Riverfront Walk (#12)</option>
+<option>Marine Drive (#11)</option>
+<option>Hill Switchbacks (#10)</option>
+</select>
+</div>
+</div>
+<!-- Saved Items List -->
+<div class="flex flex-col gap-space-sm pt-1">
+  <!-- Item 1: Riverfront Minimal Poster -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container border border-[#E2E8F0] hover:border-primary/30 transition-all gap-space-md shadow-sm hover:shadow-md">
+    <div class="flex items-center gap-space-md min-w-0">
+      <!-- Thumbnail Preview -->
+      <div class="w-14 h-14 rounded-lg bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center p-1.5 shrink-0 relative overflow-hidden">
+        <svg class="w-full h-full" fill="none" viewBox="0 0 60 60">
+          <path d="M 8,45 C 18,40 28,32 35,32 C 45,32 50,15 52,12" stroke="#2563EB" stroke-linecap="round" stroke-width="2.5"></path>
+          <circle cx="8" cy="45" fill="#16A34A" r="2.5"></circle>
+          <circle cx="52" cy="12" fill="#FB7185" r="2.5"></circle>
+        </svg>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Riverfront Minimal Poster</span>
+          <span class="px-2 py-0.2 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-[10px] font-semibold">MINIMAL</span>
+        </div>
+        <p class="font-telemetry-sm text-[12px] text-on-surface-variant mt-0.5 truncate">
+          2400×1600 px • 212 pts • 2 segments • Created Today, 11:05
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+      <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-surface-container-high text-on-surface rounded-xl font-body-sm text-body-sm font-medium border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-95" type="button">
+        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">image</span>
+        <span class="">PNG</span>
+      </button>
+      <button class="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-container hover:bg-primary text-on-primary rounded-xl font-body-sm text-body-sm font-semibold shadow-sm hover:shadow transition-all active:scale-95" type="button">
+        <span class="material-symbols-outlined text-[16px]">code</span>
+        <span class="">SVG</span>
+      </button>
+      <button class="w-8 h-8 flex items-center justify-center text-outline hover:text-error hover:bg-error-container/30 rounded-lg transition-colors ml-1" title="Delete Artwork" type="button">
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+      </button>
+    </div>
+  </div>
+  <!-- Item 2: Marine Drive Neon Trail -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container border border-[#E2E8F0] hover:border-secondary/30 transition-all gap-space-md shadow-sm hover:shadow-md">
+    <div class="flex items-center gap-space-md min-w-0">
+      <!-- Thumbnail Preview (Neon dark miniature) -->
+      <div class="w-14 h-14 rounded-lg bg-[#0B1528] border border-[#1E293B] shadow-sm flex items-center justify-center p-1.5 shrink-0 relative overflow-hidden">
+        <svg class="w-full h-full" fill="none" viewBox="0 0 60 60">
+          <path d="M 10,50 C 15,25 35,35 48,10" filter="drop-shadow(0 0 3px #00F5FF)" stroke="#00F5FF" stroke-linecap="round" stroke-width="2.5"></path>
+        </svg>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Marine Drive Neon Trail</span>
+          <span class="px-2 py-0.2 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-[10px] font-semibold">NEON</span>
+        </div>
+        <p class="font-telemetry-sm text-[12px] text-on-surface-variant mt-0.5 truncate">
+          2400×2400 px • 521 pts • 1 segment • 16 Oct, 10:14
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+      <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-surface-container-high text-on-surface rounded-xl font-body-sm text-body-sm font-medium border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-95" type="button">
+        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">image</span>
+        <span class="">PNG</span>
+      </button>
+      <button class="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-container hover:bg-primary text-on-primary rounded-xl font-body-sm text-body-sm font-semibold shadow-sm hover:shadow transition-all active:scale-95" type="button">
+        <span class="material-symbols-outlined text-[16px]">code</span>
+        <span class="">SVG</span>
+      </button>
+      <button class="w-8 h-8 flex items-center justify-center text-outline hover:text-error hover:bg-error-container/30 rounded-lg transition-colors ml-1" title="Delete Artwork" type="button">
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+      </button>
+    </div>
+  </div>
+  <!-- Item 3: Hill Switchbacks Gradient -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container border border-[#E2E8F0] hover:border-tertiary/30 transition-all gap-space-md shadow-sm hover:shadow-md">
+    <div class="flex items-center gap-space-md min-w-0">
+      <!-- Thumbnail Preview -->
+      <div class="w-14 h-14 rounded-lg bg-surface-bright border border-[#E2E8F0] shadow-sm flex items-center justify-center p-1.5 shrink-0 relative overflow-hidden">
+        <svg class="w-full h-full" fill="none" viewBox="0 0 60 60">
+          <path d="M 8,50 L 48,42 L 14,30 L 46,18 L 20,10" stroke="#8B5CF6" stroke-linecap="round" stroke-width="2"></path>
+        </svg>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="font-headline-sm text-[15px] font-semibold text-on-surface truncate">Hill Switchbacks Gradient</span>
+          <span class="px-2 py-0.2 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-[10px] font-semibold">GRADIENT</span>
+        </div>
+        <p class="font-telemetry-sm text-[12px] text-on-surface-variant mt-0.5 truncate">
+          3200×1800 px • 541 pts • 3 segments • 18 Oct, 17:02
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+      <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-surface-container-high text-on-surface rounded-xl font-body-sm text-body-sm font-medium border border-[#E2E8F0] shadow-sm hover:shadow transition-all active:scale-95" type="button">
+        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">image</span>
+        <span class="">PNG</span>
+      </button>
+      <button class="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-container hover:bg-primary text-on-primary rounded-xl font-body-sm text-body-sm font-semibold shadow-sm hover:shadow transition-all active:scale-95" type="button">
+        <span class="material-symbols-outlined text-[16px]">code</span>
+        <span class="">SVG</span>
+      </button>
+      <button class="w-8 h-8 flex items-center justify-center text-outline hover:text-error hover:bg-error-container/30 rounded-lg transition-colors ml-1" title="Delete Artwork" type="button">
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Artwork Style & Deep Customisation (lg:col-span-4 / 420px equivalent) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- 1. 'Artwork Style' Selector Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Artwork Style</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Choose an algorithmic visual representation for your path.</p>
+</div>
+<!-- Vertical Stack of 5 Selectable Style Cards -->
+<div class="flex flex-col gap-2.5">
+  <!-- Style 1: Minimal (SELECTED) -->
+  <label class="flex items-start gap-3 p-3 rounded-xl bg-surface-container-low border-2 border-primary-container transition-all cursor-pointer relative shadow-sm hover:shadow-md">
+    <div class="pt-0.5">
+      <input checked="" class="w-4 h-4 text-primary-container accent-primary-container focus:ring-primary-container cursor-pointer" name="art-style" type="radio" value="minimal">
+    </div>
+    <div class="flex flex-col flex-1 min-w-0 pr-1">
+      <div class="flex items-center justify-between">
+        <span class="font-headline-sm text-[14px] font-semibold text-primary-container">Minimal</span>
+        <span class="px-1.5 py-0.2 rounded bg-primary-container/10 text-primary-container font-label-caps text-[10px] font-semibold">Active</span>
+      </div>
+      <p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5 leading-snug">Clean single-weight line on paper white. Vector aesthetic, Swiss poster inspired.</p>
+    </div>
+    <!-- Miniature Preview Tile -->
+    <div class="w-12 h-12 rounded-lg bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-center p-1 shrink-0">
+      <svg class="w-full h-full" viewBox="0 0 40 40">
+        <path d="M 6,32 C 14,28 22,22 26,22 C 32,22 34,10 36,8" fill="none" stroke="#2563EB" stroke-linecap="round" stroke-width="2.5"></path>
+      </svg>
+    </div>
+  </label>
+  <!-- Style 2: Neon (Unselected) -->
+  <label class="flex items-start gap-3 p-3 rounded-xl bg-surface-container-lowest border border-[#E2E8F0] hover:border-primary/40 hover:bg-surface-container-low transition-all cursor-pointer shadow-sm hover:shadow-md">
+    <div class="pt-0.5">
+      <input class="w-4 h-4 text-primary-container accent-primary-container cursor-pointer" name="art-style" type="radio" value="neon">
+    </div>
+    <div class="flex flex-col flex-1 min-w-0 pr-1">
+      <span class="font-headline-sm text-[14px] font-semibold text-on-surface">Neon</span>
+      <p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5 leading-snug">Glowing trail with ambient luminescence on dark indigo vignette canvas.</p>
+    </div>
+    <div class="w-12 h-12 rounded-lg bg-[#0F172A] border border-[#1E293B] shadow-sm flex items-center justify-center p-1 shrink-0">
+      <svg class="w-full h-full" viewBox="0 0 40 40">
+        <path d="M 6,32 C 14,28 22,22 26,22 C 32,22 34,10 36,8" fill="none" filter="drop-shadow(0 0 2px #38BDF8)" stroke="#38BDF8" stroke-linecap="round" stroke-width="2.5"></path>
+      </svg>
+    </div>
+  </label>
+  <!-- Style 3: Gradient (Unselected) -->
+  <label class="flex items-start gap-3 p-3 rounded-xl bg-surface-container-lowest border border-[#E2E8F0] hover:border-primary/40 hover:bg-surface-container-low transition-all cursor-pointer shadow-sm hover:shadow-md">
+    <div class="pt-0.5">
+      <input class="w-4 h-4 text-primary-container accent-primary-container cursor-pointer" name="art-style" type="radio" value="gradient">
+    </div>
+    <div class="flex flex-col flex-1 min-w-0 pr-1">
+      <span class="font-headline-sm text-[14px] font-semibold text-on-surface">Gradient</span>
+      <p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5 leading-snug">Dynamic velocity/altitude color ramp transitioning smoothly along path vectors.</p>
+    </div>
+    <div class="w-12 h-12 rounded-lg bg-surface-bright border border-[#E2E8F0] shadow-sm flex items-center justify-center p-1 shrink-0">
+      <svg class="w-full h-full" viewBox="0 0 40 40">
+        <defs>
+          <linearGradient id="mini-grad-new" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#06B6D4"></stop>
+            <stop offset="100%" stop-color="#A855F7"></stop>
+          </linearGradient>
+        </defs>
+        <path d="M 6,32 C 14,28 22,22 26,22 C 32,22 34,10 36,8" fill="none" stroke="url(#mini-grad-new)" stroke-linecap="round" stroke-width="2.5"></path>
+      </svg>
+    </div>
+  </label>
+  <!-- Style 4: Poster (Unselected) -->
+  <label class="flex items-start gap-3 p-3 rounded-xl bg-surface-container-lowest border border-[#E2E8F0] hover:border-primary/40 hover:bg-surface-container-low transition-all cursor-pointer shadow-sm hover:shadow-md">
+    <div class="pt-0.5">
+      <input class="w-4 h-4 text-primary-container accent-primary-container cursor-pointer" name="art-style" type="radio" value="poster">
+    </div>
+    <div class="flex flex-col flex-1 min-w-0 pr-1">
+      <span class="font-headline-sm text-[14px] font-semibold text-on-surface">Poster</span>
+      <p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5 leading-snug">Editorial exhibition format with bold typography, geographic coordinate block &amp; boundary box.</p>
+    </div>
+    <div class="w-12 h-12 rounded-lg bg-surface-container-low border border-[#E2E8F0] shadow-sm flex flex-col items-center justify-center p-1 shrink-0">
+      <div class="w-8 h-5 border border-primary/40 rounded-sm mb-1 flex items-center justify-center">
+        <span class="text-[6px] font-mono font-bold text-primary">POSTER</span>
+      </div>
+      <div class="w-6 h-1 bg-outline-variant/50 rounded-full"></div>
+    </div>
+  </label>
+  <!-- Style 5: Custom (Unselected) -->
+  <label class="flex items-start gap-3 p-3 rounded-xl bg-surface-container-lowest border border-[#E2E8F0] hover:border-primary/40 hover:bg-surface-container-low transition-all cursor-pointer shadow-sm hover:shadow-md">
+    <div class="pt-0.5">
+      <input class="w-4 h-4 text-primary-container accent-primary-container cursor-pointer" name="art-style" type="radio" value="custom">
+    </div>
+    <div class="flex flex-col flex-1 min-w-0 pr-1">
+      <span class="font-headline-sm text-[14px] font-semibold text-on-surface">Custom</span>
+      <p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5 leading-snug">User-defined background, custom palette ramps, stroke width, and bloom parameters.</p>
+    </div>
+    <div class="w-12 h-12 rounded-lg bg-surface-container-low border border-[#E2E8F0] shadow-sm flex items-center justify-center p-1 shrink-0">
+      <span class="material-symbols-outlined text-outline text-[20px]">tune</span>
+    </div>
+  </label>
+</div>
+</div>
+<!-- 2. 'Customisation' Engine Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Customisation</h3>
+<span class="material-symbols-outlined text-primary text-[20px]">sliders</span>
+</div>
+<!-- Input: Artwork Title -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">ARTWORK TITLE</label>
+<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low focus:bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:ring-2 focus:ring-primary-container outline-none transition-all shadow-inner" type="text" value="Riverfront Walk — 19 Oct 2024">
+</div>
+<!-- Palette Presets (6 round gradient chips) -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">COLOR PALETTE PRESETS</label>
+<span class="font-telemetry-sm text-[11px] text-primary font-semibold">Aurora (Selected)</span>
+</div>
+<div class="grid grid-cols-6 gap-2.5 pt-1">
+  <!-- Chip 1: Aurora (SELECTED) -->
+  <button class="h-10 rounded-xl bg-gradient-to-tr from-[#22D3EE] via-[#818CF8] to-[#F472B6] p-0.5 relative shadow-md transform scale-105 ring-2 ring-primary-container ring-offset-2" title="Aurora Palette" type="button">
+    <span class="absolute inset-0 flex items-center justify-center text-white">
+      <span class="material-symbols-outlined text-[16px] drop-shadow">check</span>
+    </span>
+  </button>
+  <!-- Chip 2: Sunset -->
+  <button class="h-10 rounded-xl bg-gradient-to-tr from-[#FBBF24] via-[#FB7185] to-[#7C3AED] hover:scale-105 transition-transform shadow-sm border border-black/5 hover:shadow-md" title="Sunset Palette" type="button"></button>
+  <!-- Chip 3: Ocean -->
+  <button class="h-10 rounded-xl bg-gradient-to-tr from-[#0EA5E9] via-[#22D3EE] to-[#A7F3D0] hover:scale-105 transition-transform shadow-sm border border-black/5 hover:shadow-md" title="Ocean Palette" type="button"></button>
+  <!-- Chip 4: Forest -->
+  <button class="h-10 rounded-xl bg-gradient-to-tr from-[#A3E635] via-[#22C55E] to-[#0F766E] hover:scale-105 transition-transform shadow-sm border border-black/5 hover:shadow-md" title="Forest Palette" type="button"></button>
+  <!-- Chip 5: Magma -->
+  <button class="h-10 rounded-xl bg-gradient-to-tr from-[#FDE047] via-[#F97316] to-[#DC2626] hover:scale-105 transition-transform shadow-sm border border-black/5 hover:shadow-md" title="Magma Palette" type="button"></button>
+  <!-- Chip 6: Mono -->
+  <button class="h-10 rounded-xl bg-gradient-to-tr from-[#E2E8F0] via-[#94A3B8] to-[#475569] hover:scale-105 transition-transform shadow-sm border border-black/5 hover:shadow-md" title="Mono Palette" type="button"></button>
+</div>
+</div>
+<!-- Color Pickers: 3 Rows with Hex Codes -->
+<div class="flex flex-col gap-2 pt-1">
+  <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">CANVAS &amp; VECTOR TINTS</label>
+  <div class="flex flex-col gap-2">
+    <!-- Picker 1: Background -->
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-[#E2E8F0] hover:border-primary/30 transition-all">
+      <div class="flex items-center gap-2.5">
+        <span class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-[#CBD5E1] shadow-sm"></span>
+        <span class="font-body-sm text-body-sm text-on-surface font-medium">Background: Paper White</span>
+      </div>
+      <span class="font-telemetry-sm text-telemetry-sm text-on-surface-variant px-2 py-0.5 rounded bg-surface-container-lowest border border-[#E2E8F0]">#FFFFFF</span>
+    </div>
+    <!-- Picker 2: Route Line -->
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-[#E2E8F0] hover:border-primary/30 transition-all">
+      <div class="flex items-center gap-2.5">
+        <span class="w-6 h-6 rounded-full bg-[#2563EB] shadow-sm"></span>
+        <span class="font-body-sm text-body-sm text-on-surface font-medium">Route line: Royal Blue</span>
+      </div>
+      <span class="font-telemetry-sm text-telemetry-sm text-primary px-2 py-0.5 rounded bg-primary-fixed/40 border border-primary-fixed">#2563EB</span>
+    </div>
+    <!-- Picker 3: Accent -->
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low border border-[#E2E8F0] hover:border-primary/30 transition-all">
+      <div class="flex items-center gap-2.5">
+        <span class="w-6 h-6 rounded-full bg-[#FB7185] shadow-sm"></span>
+        <span class="font-body-sm text-body-sm text-on-surface font-medium">Accent: Coral Pink</span>
+      </div>
+      <span class="font-telemetry-sm text-telemetry-sm text-tertiary px-2 py-0.5 rounded bg-tertiary-fixed/40 border border-tertiary-fixed">#FB7185</span>
+    </div>
+  </div>
+</div>
+<!-- Line Width Slider -->
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center justify-between">
+<label class="font-body-sm text-body-sm text-on-surface font-medium">Stroke width</label>
+<span class="font-telemetry-sm text-telemetry-sm font-semibold text-primary">4.5 px</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary-container" max="20" min="1" step="0.5" type="range" value="4.5">
+<div class="flex justify-between text-[10px] text-outline font-telemetry-sm">
+<span class="">1.0 px (Hairline)</span>
+<span class="">20.0 px (Bold Ribbon)</span>
+</div>
+</div>
+<!-- Smoothing Factor Slider -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-body-sm text-body-sm text-on-surface font-medium">Smoothing algorithm</label>
+<span class="font-telemetry-sm text-telemetry-sm font-semibold text-primary">Catmull-Rom (0.75)</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary-container" max="1" min="0" step="0.05" type="range" value="0.75">
+<div class="flex justify-between text-[10px] text-outline font-telemetry-sm">
+<span class="">0.0 (Raw Points)</span>
+<span class="">1.0 (Hyper-Smooth)</span>
+</div>
+</div>
+<!-- Feature Toggles (Checkboxes) -->
+<div class="flex flex-col gap-2 pt-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">FEATURE &amp; COMPOSITION TOGGLES</label>
+<div class="grid grid-cols-1 gap-2 pt-1">
+<!-- Toggle 1: Glow & Bloom -->
+<label class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<span class="font-body-sm text-body-sm text-on-surface">Glow &amp; Bloom vector effect</span>
+<input checked="" class="w-4 h-4 text-primary-container rounded accent-primary-container" type="checkbox">
+</label>
+<!-- Toggle 2: Start Marker -->
+<label class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<span class="font-body-sm text-body-sm text-on-surface">Start marker (Green target ring)</span>
+<input checked="" class="w-4 h-4 text-primary-container rounded accent-primary-container" type="checkbox">
+</label>
+<!-- Toggle 3: End Marker -->
+<label class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<span class="font-body-sm text-body-sm text-on-surface">End marker (Coral finish dot)</span>
+<input checked="" class="w-4 h-4 text-primary-container rounded accent-primary-container" type="checkbox">
+</label>
+<!-- Toggle 4: Draw Coordinate Points -->
+<label class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<span class="font-body-sm text-body-sm text-on-surface">Draw discrete waypoint nodes</span>
+<input class="w-4 h-4 text-primary-container rounded accent-primary-container" type="checkbox">
+</label>
+<!-- Toggle 5: Show GPS outage gaps as dashed -->
+<label class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<span class="font-body-sm text-body-sm text-on-surface">Show GPS outage gaps as dashed</span>
+<input checked="" class="w-4 h-4 text-primary-container rounded accent-primary-container" type="checkbox">
+</label>
+<!-- Toggle 6: Include typography watermark -->
+<label class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<span class="font-body-sm text-body-sm text-on-surface">Include typographic watermark</span>
+<input checked="" class="w-4 h-4 text-primary-container rounded accent-primary-container" type="checkbox">
+</label>
+</div>
+</div>
+<!-- Bottom Direct Save CTA in sidebar -->
+<div class="pt-2">
+<button class="w-full py-3.5 rounded-xl bg-gradient-to-r from-primary-container to-primary hover:from-primary hover:to-primary-container text-on-primary font-body-md text-body-md font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-[0.98] border border-primary/20" type="button">
+  <span class="material-symbols-outlined text-[20px]">save_alt</span>
+  <span class="">Save Artwork Configuration</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main><footer class="relative z-10 w-full py-space-lg bg-surface-container-lowest/60 backdrop-blur-sm border-t border-[#E4E9F2]/70"><div class="max-w-[1600px] mx-auto px-margin md:px-margin-desktop text-center text-on-surface-variant font-body-sm text-body-sm">Distances, speeds and durations are GPS estimates. Demo routes are simulated and always labelled.</div></footer>
+
+</body></html>

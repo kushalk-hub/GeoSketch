@@ -163,7 +163,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
     return (
       <div className="rounded-2xl border border-edge bg-surface p-6 text-center">
         <ImageIcon size={22} className="mx-auto text-muted" />
-        <p className="mt-2 text-sm font-medium text-slate-200">No journey selected</p>
+        <p className="mt-2 text-sm font-medium text-body">No journey selected</p>
         <p className="mt-1 text-xs text-muted">
           Open a journey from the Journeys tab (or record one) to generate route artwork.
         </p>
@@ -180,7 +180,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
         <div className="rounded-2xl border border-edge bg-surface p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="min-w-0">
-              <h2 className="truncate text-sm font-semibold text-slate-100">{journey.title}</h2>
+              <h2 className="truncate text-sm font-semibold text-ink">{journey.title}</h2>
               <p className="text-[11px] text-muted">
                 journey #{journey.id} ·{' '}
                 <span className={journey.source === 'demo' ? 'text-demo' : 'text-muted'}>
@@ -194,7 +194,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
               <button
                 type="button"
                 onClick={() => void loadArtworks()}
-                className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-slate-200 transition hover:border-accent/50"
+                className="flex items-center gap-1.5 rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[11px] text-body transition hover:border-accent/50"
               >
                 <RefreshCw size={13} /> Refresh
               </button>
@@ -202,7 +202,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                 type="button"
                 onClick={() => void generate()}
                 disabled={generating || pointCount === 0}
-                className="flex items-center gap-1.5 rounded-lg border border-accent/50 bg-accent/15 px-3 py-1.5 text-[12px] font-medium text-accent transition hover:bg-accent/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex items-center gap-1.5 rounded-lg border border-accent bg-accent px-3 py-1.5 text-[12px] font-medium text-white shadow-sm transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {generating ? (
                   <Loader2 size={13} className="animate-spin" />
@@ -246,7 +246,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
           {preview ? (
             <div className="mt-3 grid gap-2 text-[11px] sm:grid-cols-2">
               <div className="rounded-lg border border-edge bg-surface-2/50 px-3 py-2">
-                <p className="font-semibold text-slate-200">Coordinate processing</p>
+                <p className="font-semibold text-body">Coordinate processing</p>
                 <ul className="mt-1 space-y-0.5 text-muted tabular">
                   <li>source fixes: {preview.processing.source_points}</li>
                   <li>drawn points: {preview.processing.drawn_points}</li>
@@ -258,7 +258,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                 </ul>
               </div>
               <div className="rounded-lg border border-edge bg-surface-2/50 px-3 py-2">
-                <p className="font-semibold text-slate-200">Canvas</p>
+                <p className="font-semibold text-body">Canvas</p>
                 <ul className="mt-1 space-y-0.5 text-muted tabular">
                   <li>
                     {preview.width} × {preview.height} px
@@ -282,7 +282,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
 
         {/* --- history ------------------------------------------------------ */}
         <div className="rounded-2xl border border-edge bg-surface p-4">
-          <h3 className="text-sm font-semibold text-slate-100">
+          <h3 className="text-sm font-semibold text-ink">
             Saved artworks{' '}
             <span className="text-muted">({artworks.length})</span>
           </h3>
@@ -298,7 +298,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                   className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-edge bg-surface-2/50 px-3 py-2"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-[12px] font-medium text-slate-100">
+                    <p className="truncate text-[12px] font-medium text-ink">
                       {artwork.title}{' '}
                       <span className="text-muted">· {artwork.style}</span>
                     </p>
@@ -311,14 +311,14 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                     <button
                       type="button"
                       onClick={() => triggerDownload(api.artworkUrl(artwork, 'png'))}
-                      className="flex items-center gap-1 rounded-md border border-edge px-2 py-1 text-[11px] text-slate-200 transition hover:border-accent/50 hover:text-white"
+                      className="flex items-center gap-1 rounded-md border border-edge px-2 py-1 text-[11px] text-body transition hover:border-accent/50 hover:text-ink"
                     >
                       <Download size={12} /> PNG
                     </button>
                     <button
                       type="button"
                       onClick={() => triggerDownload(api.artworkUrl(artwork, 'svg'))}
-                      className="flex items-center gap-1 rounded-md border border-edge px-2 py-1 text-[11px] text-slate-200 transition hover:border-accent/50 hover:text-white"
+                      className="flex items-center gap-1 rounded-md border border-edge px-2 py-1 text-[11px] text-body transition hover:border-accent/50 hover:text-ink"
                     >
                       <Download size={12} /> SVG
                     </button>
@@ -333,7 +333,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
       {/* --- controls ---------------------------------------------------- */}
       <div className="space-y-3">
         <div className="rounded-2xl border border-edge bg-surface p-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-100">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
             <Palette size={15} className="text-accent" /> Style
           </h3>
           <div className="mt-2 space-y-2">
@@ -348,7 +348,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                     : 'border-edge bg-surface-2/50 hover:border-accent/40'
                 }`}
               >
-                <p className="text-[12px] font-semibold text-slate-100">{item.label}</p>
+                <p className="text-[12px] font-semibold text-ink">{item.label}</p>
                 <p className="mt-0.5 text-[10px] leading-snug text-muted">{item.description}</p>
               </button>
             ))}
@@ -361,7 +361,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
         </div>
 
         <div className="rounded-2xl border border-edge bg-surface p-4">
-          <h3 className="text-sm font-semibold text-slate-100">Customisation</h3>
+          <h3 className="text-sm font-semibold text-ink">Customisation</h3>
 
           <label className="mt-3 block text-[11px] font-medium text-muted">
             Artwork title
@@ -371,7 +371,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
               onChange={(event) => setTitle(event.target.value)}
               maxLength={120}
               placeholder={journey.title}
-              className="mt-1 w-full rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[12px] text-slate-100 outline-none transition focus:border-accent/60"
+              className="mt-1 w-full rounded-lg border border-edge bg-surface-2/70 px-2.5 py-1.5 text-[12px] text-ink outline-none transition focus:border-accent/60"
             />
           </label>
 
@@ -390,7 +390,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                     onChange={(event) => set(event.target.value)}
                     className="h-5 w-6 cursor-pointer border-0 bg-transparent p-0"
                   />
-                  <span className="text-[10px] tabular text-slate-300">{value}</span>
+                  <span className="text-[10px] tabular text-body">{value}</span>
                 </span>
               </label>
             ))}
@@ -405,17 +405,17 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
               step={0.5}
               value={lineWidth}
               onChange={(event) => setLineWidth(Number(event.target.value))}
-              className="mt-1 w-full accent-[#38bdf8]"
+              className="mt-1 w-full accent-[#2563eb]"
             />
           </label>
 
-          <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-slate-300">
+          <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-body">
             <label className="flex items-center gap-1.5">
               <input
                 type="checkbox"
                 checked={glow}
                 onChange={(event) => setGlow(event.target.checked)}
-                className="accent-[#38bdf8]"
+                className="accent-[#2563eb]"
               />
               glow
             </label>
@@ -424,7 +424,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                 type="checkbox"
                 checked={showStart}
                 onChange={(event) => setShowStart(event.target.checked)}
-                className="accent-[#38bdf8]"
+                className="accent-[#2563eb]"
               />
               start marker
             </label>
@@ -433,7 +433,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                 type="checkbox"
                 checked={showEnd}
                 onChange={(event) => setShowEnd(event.target.checked)}
-                className="accent-[#38bdf8]"
+                className="accent-[#2563eb]"
               />
               end marker
             </label>
@@ -462,7 +462,7 @@ export default function ArtworkStudio({ journey, styles, notify }: Props) {
                       />
                     ))}
                   </span>
-                  <span className="mt-1 block text-[10px] text-slate-300">{item.label}</span>
+                  <span className="mt-1 block text-[10px] text-body">{item.label}</span>
                 </button>
               ))}
             </div>
