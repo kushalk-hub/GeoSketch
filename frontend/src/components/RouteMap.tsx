@@ -16,9 +16,9 @@ import type { GPSPoint, RouteSegment } from '../types'
 import { buildDirectionArrows, buildRouteSegments, routeBounds } from '../utils/geo'
 import { formatCoordinate, formatRelative, formatTime } from '../utils/format'
 
-const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 
 const ROUTE_COLOR = '#38bdf8'
 const ROUTE_GLOW = '#0ea5e9'
@@ -127,7 +127,7 @@ export default function RouteMap({
         preferCanvas
         className="h-full w-full"
       >
-        <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains="abcd" maxZoom={19} />
+        <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} maxZoom={19} />
         <ZoomControl position="bottomright" />
         <FitRoute bounds={bounds} signal={fitSignal} />
 
