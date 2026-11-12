@@ -9,7 +9,9 @@ from app.core.config import Settings, get_settings
 from app.core.security import owner_from_header
 from app.database.session import get_db
 from app.models.device import Device
+from app.models.parent import Parent
 from app.schemas.common import ErrorResponse
+from app.services.parent_auth import parent_from_authorization
 
 
 def settings_dependency() -> Settings:
@@ -43,3 +45,11 @@ COMMON_ERROR_RESPONSES = {
     422: {"model": ErrorResponse, "description": "Validation failed"},
     429: {"model": ErrorResponse, "description": "Rate limit exceeded"},
 }
+
+
+def current_parent(
+    authorization: str | None = Header(default=None, alias="Authorization"),
+    db: Session = Depends(get_db),
+) -> Parent:
+    """Authenticate a parent session without changing current_owner."""
+    return parent_from_authorization(authorization, db)

@@ -34,6 +34,7 @@ class GPSPointIn(BaseModel):
     #: Attach to a specific journey instead of the device's active journey.
     journey_id: int | None = None
     fix_quality: int | None = Field(default=None, ge=0, le=9)
+    sos: bool = False
 
     @model_validator(mode="after")
     def _reject_null_island(self) -> GPSPointIn:
