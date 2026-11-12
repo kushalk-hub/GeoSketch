@@ -12,6 +12,8 @@ import { useRecorder } from './hooks/useRecorder'
 import { useToasts } from './hooks/useToasts'
 import { ApiError, CONFIGURED_DEVICE_ID, api } from './services/api'
 import type { ArtworkStyleInfo, Journey, SampleRouteSummary } from './types'
+import LivePage from './pages/LivePage'
+import ParentPage from './pages/ParentPage'
 
 function messageOf(cause: unknown): string {
   return cause instanceof ApiError ? cause.message : String(cause)
@@ -30,7 +32,7 @@ function initialJourneyId(): number | null {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null
 }
 
-export default function App() {
+function DashboardApp() {
   const { toasts, notify, dismiss } = useToasts()
 
   // `?tab=studio&journey=12` deep links: a view can be bookmarked or projected
@@ -271,4 +273,15 @@ export default function App() {
       <Toaster toasts={toasts} onDismiss={dismiss} />
     </>
   )
+}
+
+export default function App() {
+  const path = window.location.pathname
+  if (path.startsWith('/live/')) {
+    return <LivePage token={decodeURIComponent(path.slice('/live/'.length))} />
+  }
+  if (path === '/parent' || path === '/parent/') {
+    return <ParentPage />
+  }
+  return <DashboardApp />
 }

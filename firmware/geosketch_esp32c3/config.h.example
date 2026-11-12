@@ -36,6 +36,9 @@
 #define GEOSKETCH_GPS_TX_PIN      5
 #define GEOSKETCH_GPS_BAUD        9600
 
+// Optional SOS button: disabled by default. Wire the button between this GPIO and GND.
+#define GEOSKETCH_SOS_PIN         -1
+
 // --- Transmission policy ---------------------------------------------------
 // A fix is transmitted when it has moved at least this far since the last
 // transmission AND the minimum interval has elapsed...

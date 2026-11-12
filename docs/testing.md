@@ -216,3 +216,9 @@ npm run ui:smoke                                             # all PASS
 
 Then, with the hardware on the bench: steps 2, 7 and 8 above (about five minutes) — they are the
 fastest way to prove the physical path still works before an audience.
+
+
+## Family Safe-Trip checks
+
+The backend suite covers parent auth, share token hashing/ownership, public payload boundaries and geofence hysteresis. Frontend tests cover live-link expiry and parent session storage. The offline watcher is disabled by default; call `check_offline_once()` directly for deterministic watcher tests. Hardware GPS, a real Telegram delivery and the ESP32 button require manual testing.
+

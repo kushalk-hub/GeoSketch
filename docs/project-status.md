@@ -224,3 +224,9 @@ cd frontend;  npm run dev
 # UI smoke test (needs a debug Chrome on :9222 — see README "Running the tests")
 npm run ui:smoke
 ```
+
+
+## 2026-11-12 — Family Safe-Trip implementation
+
+Implemented: parent registration/login and bearer sessions, one-time share tokens stored as digests, public live API, parent-managed safe zones and alerts, post-ingest hysteresis evaluation, Telegram best-effort notifier, opt-in offline watcher, frontend parent/live pages, privacy/deployment/limitations/demo docs. Automated status after implementation: 118 backend tests and 70 frontend tests passed; backend coverage was 91.63% and frontend coverage 88.1% at the last test run. A later final run is required after the final security/doc edits. Pending manual verification: real Telegram delivery, HTTPS tunnel/deployment, physical outdoor GPS and hardware flash/button test. SOS firmware support is implemented; physical button behavior and firmware compilation remain pending manual verification.
+

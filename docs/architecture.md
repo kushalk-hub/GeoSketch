@@ -243,3 +243,9 @@ Everything else (services, artwork engine, API, frontend) is storage-agnostic. F
 ingest rates, the next steps would be swapping the in-process rate limiter for Redis, moving
 artwork rendering to a background worker, and serving `data/artworks` from object storage —
 none of which changes the interfaces described above.
+
+
+## Family Safe-Trip (2026-11-12)
+
+New `Parent`, `ShareLink`, `Geofence`, `GeofenceState` and `AlertEvent` tables are registered with `create_all`; existing tables are unchanged. Parent sessions use scrypt password hashes and HMAC bearer tokens. Public live reads resolve a SHA-256 link digest and return a constrained device-only payload. Stored plausible hardware points are evaluated for safe-zone transitions in a best-effort path after ingestion commits. The optional offline watcher runs only when enabled and watches recording hardware journeys; paused/stopped journeys are ignored.
+

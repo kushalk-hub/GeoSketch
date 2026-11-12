@@ -133,3 +133,7 @@ Expected serial output for a healthy setup is shown in
 | Flashing fails after wiring | You are probably using a strapping pin (GPIO2/8/9) — move the GPS to another GPIO. |
 
 See also [`troubleshooting.md`](troubleshooting.md) for software-side symptoms.
+
+## Optional SOS button
+
+Set GEOSKETCH_SOS_PIN to a free GPIO in config.h; the default -1 disables the feature. Wire a momentary normally-open button between that GPIO and GND. The firmware uses INPUT_PULLUP, a 50 ms debounce and a press of at least 2 seconds. The next queued GPS record carries sos: true and is sent ahead of buffered records. Choose a GPIO that is free on your exact ESP32-C3 board.

@@ -20,6 +20,7 @@ import type {
   JourneyStatistics,
   SampleRouteDetail,
   SampleRouteSummary,
+  LiveView, ParentAccount, ParentAlert, SafeZone, ShareLink,
 } from '../types'
 
 const RAW_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
@@ -215,6 +216,20 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
+  // --- Family Safe-Trip ----------------------------------------------------
+  parentRegister: (email: string, password: string) => request<{token:string;parent:ParentAccount}>('/parent/register',{method:'POST',body:JSON.stringify({email,password})}),
+  parentLogin: (email: string, password: string) => request<{token:string;parent:ParentAccount}>('/parent/login',{method:'POST',body:JSON.stringify({email,password})}),
+  parentMe: (token:string) => request<ParentAccount>('/parent/me',{headers:{Authorization:'Bearer '+token}}),
+  updateParentMe: (token:string,telegram_chat_id:string|null) => request<ParentAccount>('/parent/me',{method:'PATCH',headers:{Authorization:'Bearer '+token},body:JSON.stringify({telegram_chat_id})}),
+  createShareLink: (token:string,body:{device_id:string;label:string;ttl_hours:number}) => request<{id:number;url:string;token:string;expires_at:string}>('/parent/share-links',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify(body)}),
+  listShareLinks: (token:string) => request<ShareLink[]>('/parent/share-links',{headers:{Authorization:'Bearer '+token}}),
+  revokeShareLink: (token:string,id:number) => request<void>('/parent/share-links/'+id,{method:'DELETE',headers:{Authorization:'Bearer '+token}}),
+  listGeofences: (token:string) => request<SafeZone[]>('/parent/geofences',{headers:{Authorization:'Bearer '+token}}),
+  createGeofence: (token:string,body:{device_id:string;name:string;latitude:number;longitude:number;radius_m:number}) => request<SafeZone>('/parent/geofences',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify(body)}),
+  deleteGeofence: (token:string,id:number) => request<void>('/parent/geofences/'+id,{method:'DELETE',headers:{Authorization:'Bearer '+token}}),
+  listParentAlerts: (token:string) => request<ParentAlert[]>('/parent/alerts',{headers:{Authorization:'Bearer '+token}}),
+  liveView: (token:string) => request<LiveView>('/live/'+encodeURIComponent(token)),
+
 }
 
 export type Api = typeof api
