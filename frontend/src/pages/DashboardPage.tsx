@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Pencil, RefreshCw, X } from 'lucide-react'
+import { Check, Compass, Pencil, RefreshCw, Shield, X } from 'lucide-react'
 
 import DemoModePanel from '../components/DemoModePanel'
 import RecordingControls from '../components/RecordingControls'
@@ -36,6 +36,8 @@ interface Props {
   onReturnToLive: () => void
   onRefresh: () => void
   onRename: (title: string) => void
+  onOpenParent?: () => void
+  onOpenChild?: () => void
   recorder: {
     busy: boolean
     onStart: () => void
@@ -58,6 +60,8 @@ export default function DashboardPage({
   onReturnToLive,
   onRefresh,
   onRename,
+  onOpenParent,
+  onOpenChild,
   recorder,
   demo,
 }: Props) {
@@ -142,8 +146,12 @@ export default function DashboardPage({
                       DEMO DATA
                     </span>
                   ) : journey ? (
-                    <span className="rounded-full border border-live/30 bg-live/10 px-2.5 py-1 text-[10px] font-semibold text-live">
-                      ESP32-C3
+                    <span
+                      className={isLive
+                        ? "rounded-full border border-live/30 bg-live/10 px-2.5 py-1 text-[10px] font-semibold text-live"
+                        : "rounded-full border border-edge bg-surface-2 px-2.5 py-1 text-[10px] font-semibold text-muted"}
+                    >
+                      {isLive ? 'ESP32-C3 · LIVE' : 'ESP32-C3 · SAVED'}
                     </span>
                   ) : null}
 
@@ -202,6 +210,7 @@ export default function DashboardPage({
 
           <RecordingControls
             journey={journey}
+            isLive={isLive}
             busy={recorder.busy}
             isDemoJourney={isDemoJourney}
             onStart={recorder.onStart}
@@ -211,6 +220,120 @@ export default function DashboardPage({
             onSave={recorder.onSave}
             onClear={recorder.onClear}
           />
+
+          {/* --- Family Safe-Trip: Parent & Child Portals ------------------ */}
+          <section className="rounded-2xl border border-edge bg-surface p-4 sm:p-5" aria-label="Family Safe-Trip">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield size={18} className="text-accent" />
+                <h3 className="text-sm font-semibold text-ink">Family Safe-Trip</h3>
+              </div>
+              <span className="rounded-full border border-edge bg-surface-2 px-2.5 py-0.5 text-[10px] font-semibold text-muted">
+                Location Sharing & Safety
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted">
+              Dedicated portals for parent safety monitoring, geofences, and child companion tracking.
+            </p>
+
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {/* Parent Card */}
+              <div
+                onClick={onOpenParent}
+                className="group flex cursor-pointer flex-col justify-between rounded-xl border border-edge bg-surface-2/40 p-4 transition hover:border-accent/50 hover:bg-surface-2/70"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && onOpenParent) onOpenParent()
+                }}
+                aria-label="Open Parent Portal"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="grid h-8 w-8 place-items-center rounded-lg border border-accent/20 bg-primary-fixed text-accent">
+                        <Shield size={16} />
+                      </span>
+                      <h4 className="font-semibold text-ink group-hover:text-accent">Parent Portal</h4>
+                    </div>
+                    <span className="rounded-full border border-edge bg-surface px-2 py-0.5 text-[10px] font-medium text-muted">
+                      Guardian
+                    </span>
+                  </div>
+                  <p className="mt-2.5 text-xs leading-relaxed text-body">
+                    Manage device safety, generate expiring share links, set up geofenced safe zones, and review alert events with optional Telegram alerts.
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-edge-soft pt-3">
+                  <span className="text-[11px] text-muted">
+                    Tracker: {isLive ? 'Online · Live' : 'Offline'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (onOpenParent) {
+                        onOpenParent()
+                      } else {
+                        window.location.href = '/parent'
+                      }
+                    }}
+                    className="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white transition hover:bg-accent/90"
+                  >
+                    Open Parent
+                  </button>
+                </div>
+              </div>
+
+              {/* Child Card */}
+              <div
+                onClick={onOpenChild}
+                className="group flex cursor-pointer flex-col justify-between rounded-xl border border-edge bg-surface-2/40 p-4 transition hover:border-accent/50 hover:bg-surface-2/70"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && onOpenChild) onOpenChild()
+                }}
+                aria-label="Open Child View"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="grid h-8 w-8 place-items-center rounded-lg border border-accent/20 bg-primary-fixed text-accent">
+                        <Compass size={16} />
+                      </span>
+                      <h4 className="font-semibold text-ink group-hover:text-accent">Child Companion</h4>
+                    </div>
+                    <span className="rounded-full border border-edge bg-surface px-2 py-0.5 text-[10px] font-medium text-muted">
+                      Companion
+                    </span>
+                  </div>
+                  <p className="mt-2.5 text-xs leading-relaxed text-body">
+                    Live companion view showing GPS fix status, safe zone proximity awareness, active breadcrumb trail, and emergency SOS button guidance.
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-edge-soft pt-3">
+                  <span className="text-[11px] text-muted">
+                    GPS: {latestPoint ? 'Fix acquired' : 'Searching for fix'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (onOpenChild) {
+                        onOpenChild()
+                      } else {
+                        window.location.href = '/child'
+                      }
+                    }}
+                    className="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white transition hover:bg-accent/90"
+                  >
+                    Open Child
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
         {/* --- right column ------------------------------------------------ */}

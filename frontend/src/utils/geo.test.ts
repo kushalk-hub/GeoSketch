@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import type { GPSPoint } from '../types'
+import type { DeviceStatus, GPSPoint } from '../types'
 import {
   bearingDegrees,
   buildDirectionArrows,
   buildRouteSegments,
   haversineMeters,
   isDrawable,
+  latestDevicePosition,
   routeBounds,
   routeDistance,
   shiftTimestamps,
@@ -167,5 +168,62 @@ describe('shiftTimestamps', () => {
   it('adds an offset to a base instant', () => {
     const base = new Date('2026-10-15T10:00:00Z')
     expect(shiftTimestamps(base, 90)).toBe('2026-10-15T10:01:30.000Z')
+  })
+})
+
+describe('latestDevicePosition', () => {
+  it('prefers device last_fix when it is newer than latest_point', () => {
+    const status: DeviceStatus = {
+      connected: true,
+      active_journey_id: null,
+      offline_after_seconds: 30,
+      server_time: '2026-11-17T06:00:00Z',
+      latest_point: point(1, 18.4633, 73.8684, 0, { server_timestamp: '2026-11-02T09:00:00Z' }),
+      device: {
+        device_id: 'geosketch-01',
+        name: 'GeoSketch',
+        connection_status: 'online',
+        firmware_version: '1.0.0',
+        last_seen_at: '2026-11-17T06:00:00Z',
+        last_latitude: 18.4623,
+        last_longitude: 73.8705,
+        last_satellites: 7,
+        last_fix_at: '2026-11-17T05:59:55Z',
+        points_received: 10,
+        is_live: true,
+        seconds_since_last_seen: 5,
+      },
+    }
+    expect(latestDevicePosition(status)).toEqual({
+      latitude: 18.4623,
+      longitude: 73.8705,
+      satellites: 7,
+      timestamp: '2026-11-17T05:59:55Z',
+    })
+  })
+
+  it('ignores 0,0 sentinel device coordinates and returns null when empty', () => {
+    const status: DeviceStatus = {
+      connected: false,
+      active_journey_id: null,
+      offline_after_seconds: 30,
+      server_time: '2026-11-17T06:00:00Z',
+      latest_point: null,
+      device: {
+        device_id: 'geosketch-01',
+        name: 'GeoSketch',
+        connection_status: 'offline',
+        firmware_version: '1.0.0',
+        last_seen_at: null,
+        last_latitude: 0,
+        last_longitude: 0,
+        last_satellites: 0,
+        last_fix_at: null,
+        points_received: 0,
+        is_live: false,
+        seconds_since_last_seen: null,
+      },
+    }
+    expect(latestDevicePosition(status)).toBeNull()
   })
 })

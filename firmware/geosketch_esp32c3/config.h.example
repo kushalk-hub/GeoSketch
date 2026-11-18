@@ -48,10 +48,12 @@
 #define GEOSKETCH_MAX_SEND_INTERVAL_MS  30000UL
 
 // --- GPS quality gate ------------------------------------------------------
-// A fix is only transmitted when it is valid, fresh and has enough satellites.
+// A fix is only transmitted when it is valid, fresh, stabilized and has good
+// satellite geometry.
 #define GEOSKETCH_MAX_FIX_AGE_MS    2500UL
-#define GEOSKETCH_MIN_SATELLITES    4
-#define GEOSKETCH_MAX_HDOP          8.0f
+#define GEOSKETCH_MIN_SATELLITES    5
+#define GEOSKETCH_MAX_HDOP          4.0f
+#define GEOSKETCH_WARMUP_FIXES      3
 
 // --- Buffering / retry -----------------------------------------------------
 // Points that could not be sent are kept in RAM (oldest first) and retried.

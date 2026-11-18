@@ -40,9 +40,11 @@ interface Props {
  */
 function FitRoute({
   bounds,
+  fallbackCenter,
   signal,
 }: {
   bounds: [[number, number], [number, number]] | null
+  fallbackCenter: [number, number] | null
   signal: number
 }) {
   const map = useMap()
@@ -50,17 +52,21 @@ function FitRoute({
   const lastSignal = useRef(signal)
 
   useEffect(() => {
-    if (!bounds) {
-      return
-    }
     const signalChanged = signal !== lastSignal.current
     lastSignal.current = signal
+    if (!bounds) {
+      if (fallbackCenter && (!hasFitted.current || signalChanged)) {
+        hasFitted.current = true
+        map.setView(fallbackCenter, Math.max(map.getZoom(), 16), { animate: true })
+      }
+      return
+    }
     if (hasFitted.current && !signalChanged) {
       return
     }
     hasFitted.current = true
     map.fitBounds(L.latLngBounds(bounds), { padding: [46, 46], maxZoom: 17, animate: true })
-  }, [bounds, signal, map])
+  }, [bounds, fallbackCenter, signal, map])
 
   return null
 }
@@ -109,9 +115,15 @@ export default function RouteMap({
   const endPoint = drawable.length ? drawable[drawable.length - 1] : null
 
   const [fitSignal, setFitSignal] = useState(0)
+  const latestLat = latestPoint?.latitude ?? null
+  const latestLon = latestPoint?.longitude ?? null
+  const fallbackCenter = useMemo<[number, number] | null>(
+    () => (latestLat !== null && latestLon !== null ? [latestLat, latestLon] : null),
+    [latestLat, latestLon],
+  )
 
-  const center: [number, number] = latestPoint
-    ? [latestPoint.latitude, latestPoint.longitude]
+  const center: [number, number] = fallbackCenter
+    ? fallbackCenter
     : bounds
       ? [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2]
       : [18.5204, 73.8567]
@@ -129,7 +141,7 @@ export default function RouteMap({
       >
         <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} maxZoom={19} />
         <ZoomControl position="bottomright" />
-        <FitRoute bounds={bounds} signal={fitSignal} />
+        <FitRoute bounds={bounds} fallbackCenter={fallbackCenter} signal={fitSignal} />
 
         {/* Soft glow under the track so it reads clearly on dark tiles. */}
         {segments.map((segment, index) => (

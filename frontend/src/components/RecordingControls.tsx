@@ -6,6 +6,7 @@ import { statusLabel } from '../utils/format'
 
 interface Props {
   journey: JourneyDetail | null
+  isLive: boolean
   busy: boolean
   isDemoJourney: boolean
   onStart: () => void
@@ -67,6 +68,7 @@ function Button({
  */
 export default function RecordingControls({
   journey,
+  isLive,
   busy,
   isDemoJourney,
   onStart,
@@ -102,6 +104,12 @@ export default function RecordingControls({
           {status ? statusLabel(status) : 'IDLE'}
         </span>
       </div>
+
+      {status === 'recording' && !isLive && !isDemoJourney ? (
+        <p className="mt-2 rounded-lg border border-warn/30 bg-warn/10 px-2.5 py-1.5 text-[11px] text-warn">
+          Journey is marked recording, but the tracker is offline; no new GPS points are arriving.
+        </p>
+      ) : null}
 
       {isDemoJourney ? (
         <p className="mt-2 rounded-lg border border-demo/30 bg-demo/10 px-2.5 py-1.5 text-[11px] text-demo">

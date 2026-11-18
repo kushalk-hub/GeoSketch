@@ -37,6 +37,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
   const point = journey?.points.length ? journey.points[journey.points.length - 1] : latest
 
   const isDemo = journey?.source === 'demo'
+  const hasLastKnownHardwarePoint = Boolean(point) && !isLive && !isDemo
 
   return (
     <div className="space-y-4">
@@ -53,15 +54,19 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
         </span>
         <div className="min-w-0">
           <p className={`text-sm font-semibold ${isLive ? 'text-live' : 'text-body'}`}>
-            {isLive ? 'ESP32-C3 connected — live GPS data' : 'Tracker not reporting'}
+            {isLive
+              ? 'ESP32-C3 connected — live GPS data'
+              : hasLastKnownHardwarePoint
+                ? 'Tracker offline — showing saved GPS data'
+                : 'Tracker not reporting'}
           </p>
           <p className="mt-0.5 text-[11px] leading-snug text-muted">
             {isLive
               ? `Last point ${formatRelative(device?.last_seen_at)} · device ${device?.device_id}`
-              : `Last successful update ${
+              : `Last successful GPS update ${
                   device?.last_seen_at ? formatDateTime(device.last_seen_at) : 'never'
                 }${device?.last_seen_at ? ` (${formatRelative(device.last_seen_at)})` : ''}. ${
-                  point ? 'The position shown below is the last known one.' : ''
+                  hasLastKnownHardwarePoint ? 'The map, coordinates, and statistics below show saved journey data; the marker is the last known position.' : 'No GPS position has been received yet.'
                 }`}
           </p>
         </div>
@@ -78,7 +83,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
         />
         <StatTile
           label="GPS fix"
-          value={isDemo ? 'SIMULATED' : point ? 'FIX ACQUIRED' : 'WAITING'}
+          value={isDemo ? 'SIMULATED' : isLive && point ? 'FIX ACQUIRED' : point ? 'LAST KNOWN' : 'WAITING'}
           hint={
             isDemo
               ? 'demo data — no hardware involved'
@@ -87,12 +92,12 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
                 : 'no valid fix received yet'
           }
           icon={<Satellite size={12} />}
-          tone={isDemo ? 'demo' : point ? 'live' : 'warn'}
+          tone={isDemo ? 'demo' : isLive && point ? 'live' : point ? 'muted' : 'warn'}
         />
         <StatTile
           label="Latitude"
           value={formatCoordinate(point?.latitude)}
-          hint="decimal degrees (WGS84)"
+          hint={hasLastKnownHardwarePoint ? 'last known position · decimal degrees (WGS84)' : 'decimal degrees (WGS84)'}
           icon={<MapPin size={12} />}
           mono
         />
@@ -108,7 +113,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
           mono
         />
         <StatTile
-          label="Latest GPS update"
+          label={isLive ? 'Latest GPS update' : 'Last GPS update'}
           value={formatRelative(point?.server_timestamp)}
           hint={point ? formatDateTime(point.server_timestamp) : 'no updates yet'}
           icon={<Activity size={12} />}
@@ -118,7 +123,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
           value={journey ? statusLabel(journey.status) : 'IDLE'}
           hint={journey ? `journey #${journey.id}` : 'press Start recording'}
           icon={<RadioTower size={12} />}
-          tone={journey?.status === 'recording' ? 'live' : 'default'}
+          tone={journey?.status === 'recording' && isLive ? 'live' : 'default'}
         />
       </div>
 
@@ -126,7 +131,7 @@ export default function StatusPanel({ status, journey, statistics }: Props) {
       <div className="rounded-xl border border-edge bg-surface-2/50 p-3">
         <div className="flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
-            <Route size={12} /> Journey statistics
+            <Route size={12} /> Journey statistics {hasLastKnownHardwarePoint ? '· saved data' : ''}
           </h3>
           {statistics?.is_estimate ? (
             <span className="rounded-full border border-edge px-2 py-0.5 text-[10px] text-muted">

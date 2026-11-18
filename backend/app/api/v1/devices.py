@@ -11,7 +11,7 @@ from app.api.deps import COMMON_ERROR_RESPONSES, current_owner, require_device
 from app.core.config import Settings, get_settings
 from app.core.errors import AuthError
 from app.database.session import get_db
-from app.models.device import Device
+from app.models.device import Device, DeviceStatus
 from app.schemas.common import MessageResponse
 from app.schemas.device import DeviceOut, DeviceRegister, DeviceStatusOut
 from app.services.device_service import (
@@ -20,6 +20,7 @@ from app.services.device_service import (
     register_device,
     sync_devices_from_settings,
 )
+from app.utils.time import utcnow
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,8 @@ def heartbeat(
     firmware_version: str | None = None,
 ) -> MessageResponse:
     """Lets the firmware report itself online before it has a GPS fix."""
+    device.last_seen_at = utcnow()
+    device.connection_status = DeviceStatus.ONLINE.value
     if firmware_version:
         device.firmware_version = firmware_version
     db.commit()

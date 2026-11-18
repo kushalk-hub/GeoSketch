@@ -1,10 +1,10 @@
-import { Activity, Image, LayoutDashboard, Route, Wifi, WifiOff } from 'lucide-react'
+import { Activity, Compass, Image, LayoutDashboard, Route, Shield, Wifi, WifiOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { DeviceStatus } from '../types'
 import { formatRelative } from '../utils/format'
 
-export type TabId = 'dashboard' | 'journeys' | 'studio'
+export type TabId = 'dashboard' | 'journeys' | 'studio' | 'parent' | 'child'
 
 interface Props {
   tab: TabId
@@ -19,6 +19,8 @@ const TABS: { id: TabId; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'journeys', label: 'Journeys', icon: Route },
   { id: 'studio', label: 'Artwork studio', icon: Image },
+  { id: 'parent', label: 'Parent', icon: Shield },
+  { id: 'child', label: 'Child', icon: Compass },
 ]
 
 export default function AppShell({

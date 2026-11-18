@@ -228,6 +228,13 @@ export const api = {
   createGeofence: (token:string,body:{device_id:string;name:string;latitude:number;longitude:number;radius_m:number}) => request<SafeZone>('/parent/geofences',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify(body)}),
   deleteGeofence: (token:string,id:number) => request<void>('/parent/geofences/'+id,{method:'DELETE',headers:{Authorization:'Bearer '+token}}),
   listParentAlerts: (token:string) => request<ParentAlert[]>('/parent/alerts',{headers:{Authorization:'Bearer '+token}}),
+  ackAlert: (token: string, id: number) => request<void>('/parent/alerts/' + id + '/ack', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }),
+  testTelegram: (token: string, chat_id?: string) =>
+    request<{ ok: boolean; message: string }>('/parent/telegram/test', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ chat_id }),
+    }),
   liveView: (token:string) => request<LiveView>('/live/'+encodeURIComponent(token)),
 
 }

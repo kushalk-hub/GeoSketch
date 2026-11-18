@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import json
+import urllib.error
+import urllib.parse
+import urllib.request
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import current_parent
-from app.core.errors import NotFoundError
+from app.core.config import get_settings
+from app.core.errors import AppError, NotFoundError, ValidationFailed
 from app.database.session import get_db
 from app.models.device import Device
 from app.models.parent import AlertEvent, Geofence, Parent
@@ -125,3 +131,44 @@ def ack_alert(aid: int, p: Parent = Depends(current_parent), db: Session = Depen
     x = db.scalar(select(AlertEvent).where(AlertEvent.id == aid, AlertEvent.parent_id == p.id))
     if x is None:
         raise NotFoundError("Alert not found.", code="alert_not_found")
+
+
+class TelegramTestIn(BaseModel):
+    chat_id: str | None = None
+
+
+@router.post("/parent/telegram/test")
+def test_telegram(
+    body: TelegramTestIn,
+    p: Parent = Depends(current_parent),
+    db: Session = Depends(get_db),
+):
+    target_chat_id = (body.chat_id or "").strip() or p.telegram_chat_id
+    if not target_chat_id:
+        raise ValidationFailed("Please enter or save a Telegram Chat ID first.", code="no_chat_id")
+    token = get_settings().telegram_bot_token
+    if not token:
+        raise AppError(
+            "Telegram bot token is not configured in backend/.env (GEOSKETCH_TELEGRAM_BOT_TOKEN).",
+            code="telegram_not_configured",
+            status_code=400,
+        )
+    text = "🔔 GeoSketch Test Notification: Safe-Trip alerts and geofencing notifications are successfully connected!"
+    data = urllib.parse.urlencode({"chat_id": target_chat_id, "text": text}).encode("utf-8")
+    req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+    try:
+        with urllib.request.urlopen(req, timeout=5) as response:
+            res_data = json.loads(response.read().decode())
+            if not res_data.get("ok"):
+                raise RuntimeError(res_data.get("description", "Telegram API returned error"))
+    except urllib.error.HTTPError as exc:
+        err_msg = exc.read().decode()
+        try:
+            err_json = json.loads(err_msg)
+            err_desc = err_json.get("description", err_msg)
+        except Exception:
+            err_desc = err_msg
+        raise AppError(f"Telegram API: {err_desc}", code="telegram_failed", status_code=400)
+    except Exception as exc:
+        raise AppError(f"Telegram delivery failed: {str(exc)}", code="telegram_failed", status_code=400)
+    return {"ok": True, "message": "Test notification delivered to your Telegram!"}
