@@ -70,6 +70,18 @@ class Settings(BaseSettings):
     default_owner: str = "local"
     device_offline_after_seconds: int = 30
 
+    # --- Parent safe-trip features -----------------------------------------
+    auth_secret: str | None = None
+    session_ttl_hours: int = 72
+    share_default_ttl_hours: int = 24
+    share_max_ttl_hours: int = 168
+    public_base_url: str = "http://127.0.0.1:5173"
+    allow_parent_registration: bool = True
+    telegram_bot_token: str | None = None
+    offline_check_seconds: int = 30
+    offline_alert_min_minutes: int = 5
+    offline_watcher_enabled: bool = False
+
     # --- Route processing --------------------------------------------------
     min_point_distance_m: float = 1.0
     max_plausible_speed_kmh: float = 200.0

@@ -61,9 +61,7 @@ def create_gps_point(
                 "this journey belongs to another device", code="journey_device_mismatch"
             )
     else:
-        journey = get_or_create_active_journey(
-            db, device_id=device.device_id, owner=device.owner
-        )
+        journey = get_or_create_active_journey(db, device_id=device.device_id, owner=device.owner)
 
     if journey.source != JourneySource.HARDWARE.value:
         raise ForbiddenError(
@@ -83,11 +81,20 @@ def create_gps_point(
     )
 
     # 201 when a new row was written, 200 for an idempotent / dropped point.
-    response.status_code = (
-        status.HTTP_201_CREATED if outcome.stored else status.HTTP_200_OK
-    )
+    response.status_code = status.HTTP_201_CREATED if outcome.stored else status.HTTP_200_OK
 
     point = outcome.point
+    if outcome.stored and point is not None and point.is_plausible:
+        from app.services.safe_trip_service import safely_evaluate_point
+
+        safely_evaluate_point(
+            db, device.device_id, point.latitude, point.longitude, point.satellites, payload.hdop
+        )
+    if outcome.stored and payload.sos:
+        from app.services.safe_trip_service import safely_create_sos_alert
+
+        safely_create_sos_alert(db, device.device_id)
+
     return GPSIngestResponse(
         accepted=outcome.accepted,
         stored=outcome.stored,

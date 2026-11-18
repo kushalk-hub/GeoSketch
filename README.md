@@ -815,3 +815,15 @@ GeoSketch/
 
 Built as a full-stack, hardware-based project: real GPS hardware in, real artwork out — no paid
 APIs and no fabricated coordinates anywhere in the pipeline.
+
+## Family Safe-Trip
+
+Parent accounts can create expiring, revocable links for a public live view, define safe zones and review alert events. Optional Telegram delivery and offline monitoring require configuration; see [public deployment](docs/deploy_public.md), [privacy and safety](docs/privacy_and_safety.md) and [known limitations](docs/limitations_family_safe_trip.md). This feature is a location sharing aid, not a safety guarantee. Anyone with a live link can view its data until expiry or revocation.
+
+Family Safe-Trip endpoints are listed below (all under `/api/v1`):
+- `POST /parent/register`, `POST /parent/login`, `GET/PATCH /parent/me`
+- `POST/GET /parent/share-links`, `DELETE /parent/share-links/{id}`
+- `GET /live/{token}` (public bearer link)
+- `POST/GET/PATCH/DELETE /parent/geofences`, `GET /parent/alerts`, `POST /parent/alerts/{id}/ack`
+
+The feature adds no existing-table columns and requires no new package. See [privacy and safety](docs/privacy_and_safety.md) before sharing links publicly.

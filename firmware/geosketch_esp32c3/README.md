@@ -140,3 +140,7 @@ anything that is re-sent.
 
 Record the observed latitude/longitude and compare it with a phone map — see
 `docs/troubleshooting.md` if the position looks wrong.
+
+## Optional SOS button
+
+The button is disabled by default (GEOSKETCH_SOS_PIN -1). To enable it, choose a free GPIO, wire a momentary button from that pin to GND, and set the pin in config.h. A stable 2-second hold triggers SOS; it is attached to the next GPS fix and queued at the front. Test the disabled build, debounce, long press, queued retry and backend alert on the actual board before relying on it.

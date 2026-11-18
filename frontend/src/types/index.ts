@@ -226,3 +226,8 @@ export interface RouteSegment {
   /** True when the segment follows a recording gap or a rejected jump. */
   afterBreak: boolean
 }
+export interface ParentAccount { id: number; email: string; telegram_chat_id: string | null }
+export interface ShareLink { id: number; device_id: string; label: string; expires_at: string; revoked_at: string | null; created_at: string }
+export interface SafeZone { id: number; device_id: string; name: string; latitude: number; longitude: number; radius_m: number; active: boolean; created_at: string }
+export interface ParentAlert { id: number; device_id: string; type: string; geofence_id: number | null; message: string; occurred_at: string; delivered_at: string | null; delivery_error: string | null }
+export interface LiveView { label: string; status: 'online' | 'stale' | 'offline'; last_seen: string | null; position: { latitude: number; longitude: number; accuracy_hint: string; satellites: number | null } | null; trail: { latitude: number; longitude: number; timestamp: string }[]; zones: { name: string; latitude: number; longitude: number; radius_m: number; inside: boolean | null }[]; expires_at: string }

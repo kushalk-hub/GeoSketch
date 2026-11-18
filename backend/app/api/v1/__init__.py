@@ -2,10 +2,12 @@
 
 from fastapi import APIRouter
 
-from app.api.v1 import artworks, demo, devices, gps, journeys, meta
+from app.api.v1 import artworks, demo, devices, gps, journeys, meta, parent, safe_trip
 
 api_router = APIRouter()
 api_router.include_router(meta.router)
+api_router.include_router(parent.router)
+api_router.include_router(safe_trip.router)
 api_router.include_router(gps.router)
 api_router.include_router(journeys.router)
 api_router.include_router(devices.router)

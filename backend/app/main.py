@@ -9,9 +9,10 @@ Interactive documentation: http://127.0.0.1:8000/docs
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -96,8 +97,19 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             )
     finally:
         db.close()
-    yield
-    logger.info("GeoSketch API shutting down")
+    watcher = None
+    if settings.offline_watcher_enabled:
+        from app.services.offline_watcher import offline_watcher
+
+        watcher = asyncio.create_task(offline_watcher())
+    try:
+        yield
+    finally:
+        if watcher is not None:
+            watcher.cancel()
+            with suppress(asyncio.CancelledError):
+                await watcher
+        logger.info("GeoSketch API shutting down")
 
 
 def create_app() -> FastAPI:
@@ -121,7 +133,13 @@ def create_app() -> FastAPI:
         allow_origins=settings.cors_origin_list,
         allow_credentials=False,
         allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "X-Device-Id", "X-Device-Key", "X-Owner-Key"],
+        allow_headers=[
+            "Content-Type",
+            "X-Device-Id",
+            "X-Device-Key",
+            "X-Owner-Key",
+            "Authorization",
+        ],
         expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining"],
     )
 
@@ -130,12 +148,14 @@ def create_app() -> FastAPI:
     async def _app_error_handler(request: Request, exc: AppError) -> JSONResponse:
         if exc.status_code >= 500:
             logger.exception("Unhandled application error on %s", request.url.path)
-        return JSONResponse(status_code=exc.status_code, content=exc.to_payload())
+        response = JSONResponse(status_code=exc.status_code, content=exc.to_payload())
+        if request.url.path.startswith(f"{settings.api_v1_prefix}/live/"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
+        return response
 
     @app.exception_handler(RequestValidationError)
-    async def _validation_handler(
-        request: Request, exc: RequestValidationError
-    ) -> JSONResponse:
+    async def _validation_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
         return JSONResponse(
             status_code=422,
             content={
@@ -148,9 +168,7 @@ def create_app() -> FastAPI:
         )
 
     @app.exception_handler(StarletteHTTPException)
-    async def _http_error_handler(
-        request: Request, exc: StarletteHTTPException
-    ) -> JSONResponse:
+    async def _http_error_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
         codes = {404: "not_found", 405: "method_not_allowed", 401: "unauthorized"}
         return JSONResponse(
             status_code=exc.status_code,
@@ -163,7 +181,9 @@ def create_app() -> FastAPI:
         )
 
     @app.exception_handler(Exception)
-    async def _unexpected_handler(request: Request, exc: Exception) -> JSONResponse:  # pragma: no cover
+    async def _unexpected_handler(
+        request: Request, exc: Exception
+    ) -> JSONResponse:  # pragma: no cover
         logger.exception("Unexpected error on %s", request.url.path)
         return JSONResponse(
             status_code=500,

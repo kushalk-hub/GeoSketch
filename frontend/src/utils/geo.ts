@@ -9,7 +9,7 @@
  *   - never draw a straight line across a break.
  */
 
-import type { GPSPoint, RouteSegment } from '../types'
+import type { DeviceStatus, GPSPoint, RouteSegment } from '../types'
 
 export const EARTH_RADIUS_M = 6371008.8
 
@@ -212,4 +212,61 @@ export function shiftTimestamps(
   offsetSeconds: number,
 ): string {
   return new Date(startedAt.getTime() + offsetSeconds * 1000).toISOString()
+}
+
+export interface DevicePosition {
+  latitude: number
+  longitude: number
+  satellites: number | null
+  timestamp: string | null
+}
+
+/**
+ * Pick the freshest valid coordinates reported for the tracker.
+ *
+ * Prefers `device.last_latitude`/`device.last_longitude` when `device.last_fix_at`
+ * is newer than `latest_point` (for example after an unsaved journey is cleared),
+ * keeping the coordinates readout and map markers in sync.
+ */
+export function latestDevicePosition(status: DeviceStatus | null): DevicePosition | null {
+  const device = status?.device ?? null
+  const point = status?.latest_point ?? null
+  const hasPoint = Boolean(point && isDrawable(point))
+  const hasDeviceCoords =
+    device !== null &&
+    device.last_latitude !== null &&
+    device.last_longitude !== null &&
+    !Number.isNaN(device.last_latitude) &&
+    !Number.isNaN(device.last_longitude) &&
+    !(Math.abs(device.last_latitude) < 1e-7 && Math.abs(device.last_longitude) < 1e-7)
+
+  if (hasPoint && hasDeviceCoords && point && device) {
+    const pointMs = new Date(point.gps_timestamp ?? point.server_timestamp).getTime()
+    const fixMs = device.last_fix_at ? new Date(device.last_fix_at).getTime() : Number.NaN
+    if (!Number.isNaN(fixMs) && (Number.isNaN(pointMs) || fixMs > pointMs)) {
+      return {
+        latitude: device.last_latitude!,
+        longitude: device.last_longitude!,
+        satellites: device.last_satellites ?? null,
+        timestamp: device.last_fix_at ?? device.last_seen_at ?? point.server_timestamp,
+      }
+    }
+  }
+  if (hasPoint && point) {
+    return {
+      latitude: point.latitude,
+      longitude: point.longitude,
+      satellites: point.satellites ?? device?.last_satellites ?? null,
+      timestamp: point.server_timestamp,
+    }
+  }
+  if (hasDeviceCoords && device) {
+    return {
+      latitude: device.last_latitude!,
+      longitude: device.last_longitude!,
+      satellites: device.last_satellites ?? null,
+      timestamp: device.last_fix_at ?? device.last_seen_at,
+    }
+  }
+  return null
 }

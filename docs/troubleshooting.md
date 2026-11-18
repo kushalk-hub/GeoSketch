@@ -111,3 +111,12 @@ If you are unsure whether the problem is the device or the software, split it:
 
 Still stuck? Capture (a) the serial log from power-on, (b) the full JSON body of the failing
 response and (c) the backend startup log — those three answer almost every question.
+
+
+## Family Safe-Trip
+
+- `503 auth_not_configured`: set a strong `GEOSKETCH_AUTH_SECRET` and restart the API.
+- Live link returns 404: the link may be expired or revoked; both intentionally share the same response.
+- No Telegram message: verify `GEOSKETCH_TELEGRAM_BOT_TOKEN`, the parent's chat ID, and that the parent has sent the bot a message first. Delivery errors remain on the alert record.
+- No offline alert: the watcher is opt-in (`GEOSKETCH_OFFLINE_WATCHER_ENABLED=true`) and only checks recording hardware journeys. Paused/stopped journeys are ignored.
+

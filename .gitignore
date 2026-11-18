@@ -68,3 +68,7 @@ Arduino/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Local virtualenvs & large binaries
+.venv314/
+tools/cloudflared.exe

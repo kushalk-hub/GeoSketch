@@ -12,12 +12,15 @@ import { useRecorder } from './hooks/useRecorder'
 import { useToasts } from './hooks/useToasts'
 import { ApiError, CONFIGURED_DEVICE_ID, api } from './services/api'
 import type { ArtworkStyleInfo, Journey, SampleRouteSummary } from './types'
+import LivePage from './pages/LivePage'
+import ParentPage from './pages/ParentPage'
+import ChildPage from './pages/ChildPage'
 
 function messageOf(cause: unknown): string {
   return cause instanceof ApiError ? cause.message : String(cause)
 }
 
-const TAB_IDS: TabId[] = ['dashboard', 'journeys', 'studio']
+const TAB_IDS: TabId[] = ['dashboard', 'journeys', 'studio', 'parent', 'child']
 
 function initialTab(): TabId {
   const requested = new URLSearchParams(window.location.search).get('tab')
@@ -30,7 +33,7 @@ function initialJourneyId(): number | null {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null
 }
 
-export default function App() {
+function DashboardApp() {
   const { toasts, notify, dismiss } = useToasts()
 
   // `?tab=studio&journey=12` deep links: a view can be bookmarked or projected
@@ -218,6 +221,8 @@ export default function App() {
             onReturnToLive={() => setPinnedJourneyId(null)}
             onRefresh={() => void refreshAll()}
             onRename={handleRename}
+            onOpenParent={() => setTab('parent')}
+            onOpenChild={() => setTab('child')}
             recorder={{
               busy: recorder.busy,
               onStart: () => void recorder.start(),
@@ -266,9 +271,31 @@ export default function App() {
             notify={notify}
           />
         ) : null}
+
+        {tab === 'parent' ? (
+          <ParentPage onBackToDashboard={() => setTab('dashboard')} />
+        ) : null}
+
+        {tab === 'child' ? (
+          <ChildPage onBackToDashboard={() => setTab('dashboard')} />
+        ) : null}
       </AppShell>
 
       <Toaster toasts={toasts} onDismiss={dismiss} />
     </>
   )
+}
+
+export default function App() {
+  const path = window.location.pathname
+  if (path.startsWith('/live/')) {
+    return <LivePage token={decodeURIComponent(path.slice('/live/'.length))} />
+  }
+  if (path === '/parent' || path === '/parent/') {
+    return <ParentPage onBackToDashboard={() => { window.location.href = '/' }} />
+  }
+  if (path === '/child' || path === '/child/') {
+    return <ChildPage onBackToDashboard={() => { window.location.href = '/' }} />
+  }
+  return <DashboardApp />
 }

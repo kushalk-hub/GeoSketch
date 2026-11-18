@@ -24,15 +24,23 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <Preferences.h>
 #include <TinyGPSPlus.h>
 #include <ArduinoJson.h>
+#include "firmware_types.h"
 
 #if !__has_include("config.h")
 #error "Create firmware/geosketch_esp32c3/config.h from config.h.example and fill in your credentials."
 #endif
 #include "config.h"
+#ifndef GEOSKETCH_SOS_PIN
+#define GEOSKETCH_SOS_PIN -1
+#endif
+#ifndef GEOSKETCH_WARMUP_FIXES
+#define GEOSKETCH_WARMUP_FIXES 3
+#endif
 
 /* --------------------------------------------------------------------------
  * Tunables that are rarely changed (kept here so config.h stays readable)
@@ -81,9 +89,12 @@ struct GPSRecord {
   bool     hasSpeed;
   float    speedKmh;
   uint8_t  satellites;
+  bool     hasHdop;
+  float    hdop;
   bool     hasTimestamp;
   char     timestamp[21];  // "2026-10-15T10:30:00Z" + NUL
   char     clientPointId[32];
+  bool     sos;
 };
 
 static GPSRecord queueBuffer[GEOSKETCH_QUEUE_SIZE];
@@ -101,6 +112,7 @@ static TinyGPSPlus gps;
 static HardwareSerial gpsSerial(1);
 static Preferences preferences;
 static WiFiClient wifiClient;
+static WiFiClientSecure wifiClientSecure;
 
 static DeviceState deviceState = STATE_INIT;
 static uint32_t bootId = 0;
@@ -120,6 +132,16 @@ static uint32_t lastFixSeenMs = 0;
 static double   lastFixLat = 0.0;
 static double   lastFixLon = 0.0;
 static uint32_t fixesSeen = 0;
+static uint16_t goodEpochCount = 0;
+static uint32_t lastGoodEpochMs = 0;
+static bool sosPending = false;
+#if GEOSKETCH_SOS_PIN >= 0
+static int sosRawState = HIGH;
+static int sosStableState = HIGH;
+static uint32_t sosRawChangedMs = 0;
+static uint32_t sosPressedMs = 0;
+static bool sosTriggeredForPress = false;
+#endif
 
 /* --------------------------------------------------------------------------
  * Small helpers
@@ -189,16 +211,29 @@ static bool fixIsGood(String &why) {
     why = "position is the 0,0 no-fix sentinel";
     return false;
   }
-  if (gps.satellites.isValid() && gps.satellites.value() < GEOSKETCH_MIN_SATELLITES) {
+  // Require fresh satellite count and HDOP from $GPGGA/$GNGGA so a lone
+  // $GPRMC frame or stale GGA cannot bypass the geometry quality gate.
+  if (!gps.satellites.isValid() || gps.satellites.age() > GEOSKETCH_MAX_FIX_AGE_MS * 2) {
+    why = "satellite count unavailable/stale";
+    return false;
+  }
+  if (gps.satellites.value() < GEOSKETCH_MIN_SATELLITES) {
     why = "too few satellites";
     return false;
   }
-  if (gps.hdop.isValid() && gps.hdop.hdop() > GEOSKETCH_MAX_HDOP) {
+  if (!gps.hdop.isValid() || gps.hdop.age() > GEOSKETCH_MAX_FIX_AGE_MS * 2) {
+    why = "HDOP unavailable/stale";
+    return false;
+  }
+  double hdop = gps.hdop.hdop();
+  if (hdop <= 0.0 || hdop > GEOSKETCH_MAX_HDOP) {
     why = "HDOP too high";
     return false;
   }
   return true;
 }
+
+static void feedGps();
 
 /* --------------------------------------------------------------------------
  * Queue management (FIFO so the backend always receives chronological order)
@@ -218,6 +253,17 @@ static bool queuePush(const GPSRecord &record) {
   return true;
 }
 
+static bool queuePushFront(const GPSRecord &record) {
+  if (queueCount >= GEOSKETCH_QUEUE_SIZE) {
+    queueHead = (queueHead + 1) % GEOSKETCH_QUEUE_SIZE;
+    queueCount--;
+    queueDropped++;
+  }
+  queueHead = (queueHead + GEOSKETCH_QUEUE_SIZE - 1) % GEOSKETCH_QUEUE_SIZE;
+  queueBuffer[queueHead] = record;
+  queueCount++;
+  return true;
+}
 static bool queuePeek(GPSRecord &out) {
   if (queueCount == 0) {
     return false;
@@ -284,7 +330,19 @@ static void maintainWifi() {
 /* --------------------------------------------------------------------------
  * HTTP transmission
  * ------------------------------------------------------------------------ */
-enum SendResult { SEND_OK, SEND_RETRY, SEND_DROP };
+enum SendResult : int { SEND_OK, SEND_RETRY, SEND_DROP };
+
+static bool beginHttp(HTTPClient &http, const String &url) {
+  http.setReuse(false);
+  http.setConnectTimeout(GEOSKETCH_HTTP_TIMEOUT_MS);
+  http.setTimeout(GEOSKETCH_HTTP_TIMEOUT_MS);
+  if (url.startsWith("https://")) {
+    wifiClientSecure.stop();
+    wifiClientSecure.setInsecure();
+    return http.begin(wifiClientSecure, url);
+  }
+  return http.begin(wifiClient, url);
+}
 
 static SendResult sendRecord(const GPSRecord &record) {
   String url = String(GEOSKETCH_API_BASE_URL) + GEOSKETCH_API_PATH;
@@ -308,20 +366,26 @@ static SendResult sendRecord(const GPSRecord &record) {
   } else {
     doc["satellites"] = nullptr;
   }
+  if (record.hasHdop) {
+    doc["hdop"] = serialized(String(record.hdop, 2));
+  } else {
+    doc["hdop"] = nullptr;
+  }
   if (record.hasTimestamp) {
     doc["timestamp"] = record.timestamp;
   } else {
     doc["timestamp"] = nullptr;
   }
   doc["client_point_id"] = record.clientPointId;
+  if (record.sos) {
+    doc["sos"] = true;
+  }
 
   String body;
   serializeJson(doc, body);
 
   HTTPClient http;
-  http.setConnectTimeout(GEOSKETCH_HTTP_TIMEOUT_MS);
-  http.setTimeout(GEOSKETCH_HTTP_TIMEOUT_MS);
-  if (!http.begin(wifiClient, url)) {
+  if (!beginHttp(http, url)) {
     LOG("[http] could not start the request to %s", url.c_str());
     return SEND_RETRY;
   }
@@ -334,6 +398,7 @@ static SendResult sendRecord(const GPSRecord &record) {
   int status = http.POST(body);
   String response = (status > 0) ? http.getString() : String("");
   http.end();
+  feedGps();
 
   if (status == 200 || status == 201) {
     LOG("[http] %d stored %s (seq %s)", status,
@@ -366,6 +431,48 @@ static SendResult sendRecord(const GPSRecord &record) {
 
   LOG("[http] unexpected status %d: %s", status, response.c_str());
   return SEND_RETRY;
+}
+
+#ifndef GEOSKETCH_HEARTBEAT_PATH
+#define GEOSKETCH_HEARTBEAT_PATH "/api/v1/devices/heartbeat"
+#endif
+
+static uint32_t lastHeartbeatMs = 0;
+
+/** Report device online to the backend even before a GPS fix is acquired. */
+static void sendHeartbeat() {
+  if (!wifiConnected()) {
+    return;
+  }
+  String url = String(GEOSKETCH_API_BASE_URL) + GEOSKETCH_HEARTBEAT_PATH +
+               "?firmware_version=" + FIRMWARE_VERSION;
+  HTTPClient http;
+  if (!beginHttp(http, url)) {
+    return;
+  }
+  http.addHeader("X-Device-Id", GEOSKETCH_DEVICE_ID);
+  http.addHeader("X-Device-Key", GEOSKETCH_DEVICE_KEY);
+  http.addHeader("Content-Length", "0");
+  http.addHeader("Connection", "close");
+  int status = http.POST("");
+  http.end();
+  feedGps();
+  if (status == 200 || status == 201) {
+    LOG("[http] heartbeat OK (device online)");
+  } else {
+    LOG("[http] heartbeat failed (%d) -> %s", status, url.c_str());
+  }
+}
+
+static void maintainHeartbeat() {
+  if (!wifiConnected()) {
+    return;
+  }
+  uint32_t now = millis();
+  if (lastHeartbeatMs == 0 || (now - lastHeartbeatMs >= 20000UL && now - lastSentMs >= 20000UL)) {
+    lastHeartbeatMs = now;
+    sendHeartbeat();
+  }
 }
 
 /** Try to upload buffered points.  Stops at the first retryable failure. */
@@ -417,16 +524,47 @@ static void flushQueue() {
 /* --------------------------------------------------------------------------
  * GPS handling
  * ------------------------------------------------------------------------ */
+static void handleSosButton() {
+#if GEOSKETCH_SOS_PIN >= 0
+  uint32_t now = millis();
+  int reading = digitalRead(GEOSKETCH_SOS_PIN);
+  if (reading != sosRawState) {
+    sosRawState = reading;
+    sosRawChangedMs = now;
+  } else if (reading != sosStableState && now - sosRawChangedMs >= 50) {
+    sosStableState = reading;
+    if (sosStableState == LOW) {
+      sosPressedMs = now;
+      sosTriggeredForPress = false;
+    } else {
+      sosTriggeredForPress = false;
+    }
+  }
+  if (sosStableState == LOW && !sosTriggeredForPress && now - sosPressedMs >= 2000) {
+    sosPending = true;
+    sosTriggeredForPress = true;
+    LOG("[sos] long press detected; SOS will go with the next GPS fix");
+  }
+#endif
+}
+static bool echoRawNmea = false;
+
 static void feedGps() {
   while (gpsSerial.available() > 0) {
-    gps.encode(gpsSerial.read());
+    char c = (char)gpsSerial.read();
+    if (echoRawNmea) {
+      Serial.write(c);
+    }
+    gps.encode(c);
   }
 }
 
 /** Decide whether the current fix should be transmitted, and enqueue it. */
 static void maybeCaptureFix() {
+  bool locationUpdated = gps.location.isUpdated();
   String why;
   if (!fixIsGood(why)) {
+    goodEpochCount = 0;
     if (deviceState != STATE_TRANSMISSION_FAILED && deviceState != STATE_RECONNECTING) {
       setState(STATE_WAITING_FOR_FIX);
     }
@@ -441,17 +579,28 @@ static void maybeCaptureFix() {
     return;
   }
 
+  uint32_t now = millis();
+  if (locationUpdated && (lastGoodEpochMs == 0 || now - lastGoodEpochMs >= 800)) {
+    lastGoodEpochMs = now;
+    if (goodEpochCount < GEOSKETCH_WARMUP_FIXES) {
+      goodEpochCount++;
+    }
+  }
+
   if (deviceState == STATE_WAITING_FOR_FIX || deviceState == STATE_INIT) {
     setState(STATE_FIX_ACQUIRED);
   }
 
-  lastFixSeenMs = millis();
+  if (goodEpochCount < GEOSKETCH_WARMUP_FIXES && !sosPending) {
+    return;
+  }
+
+  lastFixSeenMs = now;
   lastFixLat = gps.location.lat();
   lastFixLon = gps.location.lng();
   fixesSeen++;
 
   // --- transmission policy: distance + interval, with a liveness heartbeat ---
-  uint32_t now = millis();
   double moved = haveLastSent
                      ? distanceMeters(lastSentLat, lastSentLon, lastFixLat, lastFixLon)
                      : FIRST_FIX_ALWAYS;
@@ -465,7 +614,7 @@ static void maybeCaptureFix() {
   // Transmit when the device has moved far enough and the minimum interval has
   // passed, or when the liveness heartbeat is due (which also carries the very
   // first fix and the "parked at the cafe" case).
-  if (!(firstFix || heartbeatDue || (movedEnough && waitedEnough))) {
+  if (!(firstFix || sosPending || heartbeatDue || (movedEnough && waitedEnough))) {
     return;
   }
 
@@ -476,22 +625,31 @@ static void maybeCaptureFix() {
   record.hasAltitude = gps.altitude.isValid();
   record.altitude = record.hasAltitude ? (float)gps.altitude.meters() : 0.0f;
   record.hasSpeed = gps.speed.isValid();
-  record.speedKmh = record.hasSpeed ? (float)gps.speed.kmh() : 0.0f;
+  record.speedKmh = record.hasSpeed ? (float)gps.speed.kmph() : 0.0f;
   record.satellites = gps.satellites.isValid() ? (uint8_t)min(gps.satellites.value(), (uint32_t)255) : 0;
+  record.hasHdop = gps.hdop.isValid();
+  record.hdop = record.hasHdop ? (float)gps.hdop.hdop() : 0.0f;
   record.hasTimestamp = buildTimestamp(record.timestamp, sizeof(record.timestamp));
   if (!record.hasTimestamp) {
     record.timestamp[0] = '\0';
   }
+  record.sos = sosPending;
   snprintf(record.clientPointId, sizeof(record.clientPointId), "%lu-%lu",
            (unsigned long)bootId, (unsigned long)(++pointSequence));
 
-  queuePush(record);
+  if (record.sos) {
+    queuePushFront(record);
+    sosPending = false;
+  } else {
+    queuePush(record);
+  }
 
-  LOG("[gps] fix captured: %.7f, %.7f  alt %s  spd %s  sats %u  time %s  queue %u  (%s)",
+  LOG("[gps] fix captured: %.7f, %.7f  alt %s  spd %s  sats %u  hdop %.1f  time %s  queue %u  (%s)",
       record.latitude, record.longitude,
       record.hasAltitude ? String(record.altitude, 1).c_str() : "n/a",
       record.hasSpeed ? String(record.speedKmh, 1).c_str() : "n/a",
       record.satellites,
+      record.hasHdop ? record.hdop : 99.9f,
       record.hasTimestamp ? record.timestamp : "unavailable",
       queueCount, record.clientPointId);
 
@@ -519,10 +677,11 @@ static void printStatus() {
       wifiConnected() ? "connected" : "disconnected",
       wifiConnected() ? WiFi.localIP().toString().c_str() : "-",
       wifiConnected() ? WiFi.RSSI() : 0);
-  LOG("GPS chars %lu | sentences %lu | fixes parsed %lu | last fix %s",
+  LOG("GPS bytes %lu | NMEA valid sentences: %lu (checksum errors: %lu) | 3D fixes: %lu | last fix: %s",
       (unsigned long)gps.charsProcessed(),
+      (unsigned long)gps.passedChecksum(),
+      (unsigned long)gps.failedChecksum(),
       (unsigned long)gps.sentencesWithFix(),
-      (unsigned long)fixesSeen,
       gps.location.isValid() ? "valid" : "none");
   if (gps.location.isValid()) {
     LOG("position %.7f, %.7f | age %lu ms | sats %lu | hdop %.1f | alt %s m | spd %s km/h",
@@ -531,7 +690,7 @@ static void printStatus() {
         (unsigned long)gps.satellites.value(),
         gps.hdop.isValid() ? gps.hdop.hdop() : 0.0,
         gps.altitude.isValid() ? String(gps.altitude.meters(), 1).c_str() : "n/a",
-        gps.speed.isValid() ? String(gps.speed.kmh(), 1).c_str() : "n/a");
+        gps.speed.isValid() ? String(gps.speed.kmph(), 1).c_str() : "n/a");
   }
   LOG("queue %u/%d | sent %lu | failed %lu | dropped %lu",
       queueCount, GEOSKETCH_QUEUE_SIZE,
@@ -548,6 +707,11 @@ static void handleSerialCommands() {
     char command = (char)Serial.read();
     switch (command) {
       case 's': printStatus(); break;
+      case 'n':
+        echoRawNmea = !echoRawNmea;
+        LOG("[cmd] raw NMEA live stream: %s (press 'n' + Enter again to toggle)",
+            echoRawNmea ? "ENABLED" : "DISABLED");
+        break;
       case 'g':
         LOG("raw: lat %s lon %s sats %lu hdop %.2f date %04d-%02d-%02d time %02d:%02d:%02d",
             String(gps.location.lat(), 7).c_str(), String(gps.location.lng(), 7).c_str(),
@@ -598,6 +762,11 @@ void setup() {
   Serial.println(F("==============================================================="));
 
   setState(STATE_INIT);
+#if GEOSKETCH_SOS_PIN >= 0
+  pinMode(GEOSKETCH_SOS_PIN, INPUT_PULLUP);
+  sosRawState = sosStableState = digitalRead(GEOSKETCH_SOS_PIN);
+  sosRawChangedMs = millis();
+#endif
 
   // Persistent boot counter: keeps client_point_id unique across reboots, so a
   // point that was buffered before a power cut is still de-duplicated by the
@@ -607,6 +776,7 @@ void setup() {
   preferences.putUInt("bootId", bootId);
   LOG("[init] boot #%lu (client ids look like %lu-1)", (unsigned long)bootId, (unsigned long)bootId);
 
+  gpsSerial.setRxBufferSize(2048);
   gpsSerial.begin(GEOSKETCH_GPS_BAUD, SERIAL_8N1, GEOSKETCH_GPS_RX_PIN, GEOSKETCH_GPS_TX_PIN);
   LOG("[init] GPS UART1 on RX=GPIO%d TX=GPIO%d @ %d baud",
       GEOSKETCH_GPS_RX_PIN, GEOSKETCH_GPS_TX_PIN, GEOSKETCH_GPS_BAUD);
@@ -621,7 +791,9 @@ void setup() {
 void loop() {
   feedGps();
   handleSerialCommands();
+  handleSosButton();
   maintainWifi();
+  maintainHeartbeat();
   maybeCaptureFix();
 
   if (queueCount > 0 && wifiConnected()) {

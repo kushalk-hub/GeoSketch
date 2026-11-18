@@ -88,3 +88,17 @@ describe('api request layer', () => {
     expect(init.body).toBe(JSON.stringify({ title: 'Walk' }))
   })
 })
+
+  it('sends bearer auth for parent calls and normalizes expired live links', async () => {
+    const spy = stubFetch(async (input, init) => {
+      if (input.endsWith('/parent/me')) {
+        expect(new Headers(init?.headers).get('Authorization')).toBe('Bearer parent-session')
+        return jsonResponse({ id: 1, email: 'parent@example.test', telegram_chat_id: null })
+      }
+      return jsonResponse({ error: { code: 'not_found', message: 'Share link not found.' } }, 404)
+    })
+    await expect(api.parentMe('parent-session')).resolves.toMatchObject({ id: 1 })
+    await expect(api.liveView('expired-token')).rejects.toMatchObject({ status: 404, code: 'not_found' })
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
